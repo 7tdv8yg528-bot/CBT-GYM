@@ -1,0 +1,1539 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>CBT Habit Companion — Gym & Skip Dessert</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#e8f3fc;--sf:#ffffff;--ink:#0f2a43;--mu:#546f89;--ac:#1d76c4;--at:#1d76c4;--on:#ffffff;--soft:#d3e9fa;--ln:#b9d8f1;--ok:#1f7a5a;--warn:#a85a00;--wt:#ffffff;
+  color-scheme:light;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+/* Skip Dessert Light Theme (Warm Sage-Teal) */
+:root[data-mode="dessert"]{
+  --bg:#eaf5f2;--sf:#ffffff;--ink:#102e2a;--mu:#4d6f6a;--ac:#157a6e;--at:#157a6e;--on:#ffffff;--soft:#d1ebe6;--ln:#b3ddd6;--ok:#1f7a5a;--warn:#b35900;--wt:#ffffff;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#0b1d2d;--sf:#122f49;--ink:#e6f2fc;--mu:#9bb7cf;--ac:#5cb0f0;--at:#5cb0f0;--on:#08202f;--soft:#183c5c;--ln:#25526f;--ok:#6fd1a8;--warn:#f0b35c;--wt:#1c1500;
+    color-scheme:dark;
+  }
+  :root[data-mode="dessert"]:not([data-theme="light"]){
+    --bg:#0a1f1d;--sf:#113330;--ink:#e6f7f5;--mu:#96c2bc;--ac:#4fd1c5;--at:#4fd1c5;--on:#062320;--soft:#174440;--ln:#235c57;--ok:#6fd1a8;--warn:#f0b35c;--wt:#1c1500;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0b1d2d;--sf:#122f49;--ink:#e6f2fc;--mu:#9bb7cf;--ac:#5cb0f0;--at:#5cb0f0;--on:#08202f;--soft:#183c5c;--ln:#25526f;--ok:#6fd1a8;--warn:#f0b35c;--wt:#1c1500;
+  color-scheme:dark;
+}
+:root[data-theme="dark"][data-mode="dessert"]{
+  --bg:#0a1f1d;--sf:#113330;--ink:#e6f7f5;--mu:#96c2bc;--ac:#4fd1c5;--at:#4fd1c5;--on:#062320;--soft:#174440;--ln:#235c57;--ok:#6fd1a8;--warn:#f0b35c;--wt:#1c1500;
+  color-scheme:dark;
+}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 16px/1.5 Nunito,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-text-size-adjust:100%;transition:background-color .2s,color .2s}
+html,body{background:var(--bg);color:var(--ink)}
+#app{background:var(--bg);color:var(--ink);min-height:100vh;min-height:100dvh}
+
+/* Top Sticky Program Switcher + Theme Bar */
+.topbar{
+  position:sticky;top:0;z-index:30;
+  background:var(--sf);
+  border-bottom:1px solid var(--ln);
+  padding:8px 12px;
+}
+.topbar-in{
+  max-width:560px;margin:0 auto;
+  display:flex;align-items:center;justify-content:space-between;gap:8px;
+}
+.mode-sw{
+  display:flex;flex:1;background:var(--bg);padding:3px;border-radius:999px;border:1px solid var(--ln);gap:3px;
+}
+.mode-btn{
+  flex:1;border:0;background:transparent;color:var(--mu);
+  font:800 .86rem Nunito,system-ui,sans-serif;
+  padding:8px 10px;border-radius:999px;cursor:pointer;
+  min-height:38px;display:flex;align-items:center;justify-content:center;gap:5px;
+  transition:all .15s;
+}
+.mode-btn[aria-selected="true"]{
+  background:var(--ac);color:var(--on);
+  box-shadow:0 2px 6px rgba(0,0,0,.12);
+}
+.theme-btn{
+  font:700 .8rem Nunito,system-ui,sans-serif;
+  color:var(--ink);background:var(--soft);border:1px solid var(--ln);
+  border-radius:999px;padding:8px 12px;min-height:38px;cursor:pointer;white-space:nowrap;
+}
+
+/* Ritual Banner (Skip Dessert mode) */
+.ritual-bar{
+  background:var(--soft);border-bottom:1px solid var(--ln);
+  padding:7px 14px;font-size:.84rem;
+}
+.ritual-in{
+  max-width:560px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:8px;
+}
+.ritual-in b{color:var(--at)}
+.mini-btn{
+  font:800 .76rem Nunito,system-ui,sans-serif;
+  background:var(--ac);color:var(--on);border:0;border-radius:999px;
+  padding:5px 11px;cursor:pointer;white-space:nowrap;min-height:30px;
+}
+
+.pk{position:relative;display:flex;align-items:center;justify-content:space-between;min-height:48px;padding:0 14px;background:var(--bg);border:1.5px solid var(--ln);border-radius:12px}
+.pk .v{pointer-events:none;font-weight:600}
+.pk .v.ph{color:var(--mu);font-weight:400}
+.pk::after{content:"\25BE";color:var(--mu);pointer-events:none}
+.pk input{position:absolute;inset:0;width:100%;height:100%;opacity:0;border:0;margin:0;font-size:16px;cursor:pointer}
+.pk:focus-within{outline:3px solid var(--at);outline-offset:1px}
+
+main{max-width:560px;margin:0 auto;padding:8px 16px 116px}
+h1{font-size:1.5rem;font-weight:800;margin:6px 0 2px;line-height:1.2}
+h2{font-size:1.1rem;font-weight:800;margin:0 0 6px}
+h3{font-size:.96rem;font-weight:800;margin:10px 0 4px}
+p{margin:0 0 10px}
+.mu{color:var(--mu);font-size:.9rem}
+.card{background:var(--sf);border:1px solid var(--ln);border-radius:16px;padding:16px;margin:14px 0}
+.f{display:block;margin:12px 0}
+.f>span{display:block;font-weight:600;font-size:.92rem;margin-bottom:4px}
+input[type=text],input[type=number],input[type=time],input[type=date],textarea{
+  width:100%;font:inherit;color:var(--ink);background:var(--bg);border:1.5px solid var(--ln);border-radius:12px;padding:10px 12px;
+}
+textarea{resize:vertical;min-height:64px}
+input:focus,textarea:focus,button:focus-visible{outline:3px solid var(--at);outline-offset:1px}
+.row{display:flex;gap:8px;flex-wrap:wrap}
+.chip{
+  font:600 .9rem Nunito,system-ui,sans-serif;color:var(--ink);background:var(--soft);
+  border:1.5px solid transparent;border-radius:999px;padding:8px 14px;cursor:pointer;min-height:42px;
+  -webkit-touch-callout:none;-webkit-user-select:none;user-select:none;
+}
+.chip.sm{font-size:.82rem;padding:6px 11px;min-height:34px}
+.chip[aria-pressed=true]{background:var(--ac);color:var(--on);border-color:var(--at)}
+.dg{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}
+.dg .chip{padding:9px 0;text-align:center;font-size:.8rem;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px}
+.dg .chip i{width:6px;height:6px;border-radius:99px;background:transparent;display:block}
+.dg .chip.has i{background:var(--at)}
+.dg .chip[aria-pressed=true] i{background:var(--on)}
+.dot.pl i{box-shadow:inset 0 0 0 2px var(--at)}
+.btn{font:800 1rem Nunito,system-ui,sans-serif;background:var(--ac);color:var(--on);border:0;border-radius:14px;padding:13px 18px;min-height:48px;width:100%;cursor:pointer;margin-top:10px}
+.btn.alt{background:var(--soft);color:var(--ink)}
+input[type=range]{width:100%;accent-color:var(--at);height:32px}
+.sl{display:flex;justify-content:space-between;align-items:baseline;font-weight:600;font-size:.92rem}
+.sl b{font-size:1.2rem;color:var(--at)}
+.chk{display:flex;gap:10px;align-items:center;padding:8px 0;font-weight:600;cursor:pointer}
+.chk input{width:22px;height:22px;accent-color:var(--at)}
+
+nav{
+  position:fixed;left:0;right:0;bottom:0;z-index:30;
+  background:var(--sf);border-top:1px solid var(--ln);
+  display:flex;gap:3px;justify-content:center;
+  padding:7px 6px calc(7px + env(safe-area-inset-bottom,0px));
+}
+nav button{
+  flex:1;max-width:96px;font:700 .76rem Nunito,system-ui,sans-serif;
+  color:var(--mu);background:transparent;border:0;border-radius:12px;
+  padding:8px 2px;min-height:46px;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;
+}
+nav button[aria-current=true]{background:var(--soft);color:var(--ink);font-weight:800}
+
+.dots{display:flex;gap:6px;margin:10px 0}
+.dot{flex:1;text-align:center;font-size:.78rem;color:var(--mu)}
+.dot i{display:block;height:34px;border-radius:10px;background:var(--soft);margin-bottom:3px}
+.dot.on i{background:var(--ac);border:2px solid var(--at)}
+.dot.now{font-weight:800;color:var(--ink)}
+.bar{height:12px;border-radius:99px;background:var(--soft);overflow:hidden}
+.bar i{display:block;height:100%;background:var(--at);border-radius:99px}
+.big{font-size:2.3rem;font-weight:800;line-height:1;color:var(--at)}
+.stat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:10px 0}
+.stat-box{background:var(--bg);border:1px solid var(--ln);border-radius:12px;padding:10px 8px;text-align:center}
+.stat-box b{display:block;font-size:1.35rem;font-weight:800;color:var(--at)}
+.stat-box span{font-size:.76rem;color:var(--mu);font-weight:600}
+
+.note{border-left:4px solid var(--at);background:var(--soft);padding:10px 12px;border-radius:0 12px 12px 0;margin:12px 0}
+.note.w{border-color:var(--warn)}
+.rec{border-top:1px solid var(--ln);padding:10px 0;font-size:.92rem}
+.rec:first-child{border-top:0}
+.tm{font-size:3rem;font-weight:800;text-align:center;color:var(--at);font-variant-numeric:tabular-nums}
+.x{float:right;background:none;border:0;color:var(--mu);font-size:1.1rem;cursor:pointer;min-height:40px;min-width:40px}
+
+/* Calendar */
+.cal{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;margin-top:10px}
+.cw{text-align:center;font-size:.75rem;color:var(--mu);font-weight:600}
+.cd{aspect-ratio:1;display:flex;align-items:center;justify-content:center;border-radius:10px;background:var(--soft);font-size:.85rem;color:var(--ink)}
+.cd.went{background:var(--ac);color:var(--on);font-weight:800;border:2px solid var(--at)}
+.cd.short{background:var(--sf);border:2px solid var(--at);font-weight:800}
+.cd.skipped{background:var(--sf);border:2px dashed var(--warn);color:var(--warn)}
+.cd.now{box-shadow:0 0 0 2px var(--ink)}
+.cm{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.cm h2{margin:0}
+.lg{display:flex;gap:12px;flex-wrap:wrap;font-size:.8rem;color:var(--mu);margin-top:10px}
+.lg i{display:inline-block;width:14px;height:14px;border-radius:5px;vertical-align:-2px;margin-right:4px;background:var(--soft)}
+.lg i.a{background:var(--ac);border:2px solid var(--at)}
+.lg i.b{background:var(--sf);border:2px solid var(--at)}
+.lg i.c{background:var(--sf);border:2px dashed var(--warn)}
+
+/* Urge Wave Chart & Table */
+.wave-box{
+  display:flex;align-items:flex-end;justify-content:space-between;
+  gap:8px;height:120px;padding:18px 8px 4px;
+  background:var(--bg);border:1px solid var(--ln);border-radius:14px;margin:10px 0;
+}
+.wave-col{flex:1;display:flex;flex-direction:column;align-items:center;height:100%;justify-content:flex-end;cursor:pointer}
+.wave-col b{font-size:.78rem;color:var(--ink);margin-bottom:3px}
+.wave-bar{width:100%;max-width:42px;background:var(--ac);border-radius:8px 8px 4px 4px;transition:height .25s}
+.wave-col.sel .wave-bar{outline:2px solid var(--ink)}
+.wave-col span{font-size:.74rem;color:var(--mu);font-weight:700;margin-top:4px}
+.tbl{width:100%;table-layout:fixed;border-collapse:collapse;font-size:.83rem;margin-top:8px}
+.tbl th,.tbl td{border-bottom:1px solid var(--ln);padding:8px 6px;text-align:left;vertical-align:middle;word-wrap:break-word;overflow-wrap:break-word}
+.tbl th{color:var(--mu);font-weight:700;font-size:.75rem;text-transform:uppercase;line-height:1.25}
+.tbl .t-col{width:20%;white-space:nowrap}
+.tbl .u-col{width:18%;white-space:nowrap;text-align:center}
+.tbl .b-col{width:31%}
+.tbl .r-col{width:31%}
+
+@media (prefers-reduced-motion:no-preference){.bar i{transition:width .4s}}
+</style>
+</head>
+<body>
+<div id="app">
+  <!-- Sticky Top Mode Switcher & Theme Toggle -->
+  <header class="topbar">
+    <div class="topbar-in">
+      <div class="mode-sw" role="tablist" aria-label="Choose CBT Program">
+        <button type="button" class="mode-btn" id="m-gym" role="tab" aria-selected="true" data-act="mode" data-v="gym">
+          <span>🏋️ Gym Habit</span>
+        </button>
+        <button type="button" class="mode-btn" id="m-dessert" role="tab" aria-selected="false" data-act="mode" data-v="dessert">
+          <span>🍰 Skip Dessert</span>
+        </button>
+      </div>
+      <button class="theme-btn" id="tg" type="button">☾ Dark</button>
+    </div>
+  </header>
+
+  <!-- Dynamic Sub-banner for Skip Dessert If-Then Ritual -->
+  <div id="ritual-banner" style="display:none" class="ritual-bar">
+    <div class="ritual-in">
+      <div style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
+        <b>My Ritual:</b> <span id="ritual-txt">Tap 4. Ritual to set your closing ritual</span>
+      </div>
+      <button type="button" class="mini-btn" data-act="go-surf">🌊 Surf Urge</button>
+    </div>
+  </div>
+
+  <main id="m"></main>
+</div>
+<nav id="nv" aria-label="Section navigation"></nav>
+
+<script>
+/* ==========================================================================
+   STORAGE & STATE INITIALIZATION (Backwards-compatible with cbt-gym-v1)
+   ========================================================================== */
+var KEY_GYM = 'cbt-gym-v1';
+var KEY_DES = 'cbt-dessert-v1';
+var KEY_MODE = 'cbt-active-mode';
+
+var S = {}; // Gym Habit State
+var D = {}; // Skip Dessert State
+var MODE = 'gym';
+
+try { MODE = localStorage.getItem(KEY_MODE) || 'gym'; } catch(e) { MODE = 'gym'; }
+if (MODE !== 'gym' && MODE !== 'dessert') MODE = 'gym';
+
+// Load Gym State
+try { S = JSON.parse(localStorage.getItem(KEY_GYM)) || {}; } catch(e) { S = {}; }
+S.plan = S.plan || {};
+S.logs = S.logs || {};
+S.thoughts = S.thoughts || [];
+S.weeks = S.weeks || {};
+S.slips = S.slips || [];
+
+// Load Dessert State
+function defaultSurfIntervals() {
+  return {
+    0: { urge: null, body: '', act: '' },
+    5: { urge: null, body: '', act: '' },
+    10: { urge: null, body: '', act: '' },
+    15: { urge: null, body: '', act: '' },
+    20: { urge: null, body: '', act: '' }
+  };
+}
+var OLD_DEFAULT_IFTHEN = 'brew a cup of mint tea and step away from the table for 5 minutes';
+try { D = JSON.parse(localStorage.getItem(KEY_DES)) || {}; } catch(e) { D = {}; }
+D.plan = D.plan || {
+  ifthen: '',
+  opts: [],
+  customOpts: [],
+  other: '',
+  hide: '',
+  lunch: '',
+  commonTrigger: '',
+  favTrap: ''
+};
+if (D.plan.ifthen === OLD_DEFAULT_IFTHEN) D.plan.ifthen = '';
+D.plan.opts = D.plan.opts || [];
+D.plan.customOpts = D.plan.customOpts || [];
+D.logs = D.logs || {};
+D.thoughts = D.thoughts || [];
+D.surfs = D.surfs || [];
+D.surfDraft = D.surfDraft || { step: 0, lasted: '', pts: defaultSurfIntervals() };
+if (!D.surfDraft.pts) D.surfDraft.pts = defaultSurfIntervals();
+// Migrate any old pre-filled default numbers (7,8,6,4,2) to null if untouched
+(function() {
+  var p = D.surfDraft.pts;
+  if (p[0] && p[0].urge === 7 && p[5] && p[5].urge === 8 && p[10] && p[10].urge === 6 && p[15] && p[15].urge === 4 && p[20] && p[20].urge === 2 &&
+      !p[0].body && !p[0].act && !p[5].body && !p[5].act) {
+    D.surfDraft.pts = defaultSurfIntervals();
+  }
+})();
+D.surf = D.surfDraft;
+D.weeks = D.weeks || {};
+D.slips = D.slips || [];
+
+function saveGym() { try { localStorage.setItem(KEY_GYM, JSON.stringify(S)); } catch(e) {} }
+function saveDes() { try { localStorage.setItem(KEY_DES, JSON.stringify(D)); } catch(e) {} }
+function save() {
+  if (MODE === 'gym') saveGym();
+  else saveDes();
+}
+
+function $(s) { return document.querySelector(s); }
+function esc(s) {
+  return String(s == null ? '' : s).replace(/[&<>"]/g, function(c) {
+    return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c];
+  });
+}
+function iso(d) {
+  var z = new Date(d.getTime() - d.getTimezoneOffset() * 6e4);
+  return z.toISOString().slice(0, 10);
+}
+function td() { return iso(new Date()); }
+function addD(d, n) { var x = new Date(d); x.setDate(x.getDate() + n); return x; }
+function mon(d) { var x = new Date(d); x.setHours(12, 0, 0, 0); return addD(x, -((x.getDay() + 6) % 7)); }
+function WK() { return iso(mon(new Date())); }
+
+/* Shared UI Helpers */
+function fld(l, p, rows, ph) {
+  var placeholder = ph ? ' placeholder="' + esc(ph) + '"' : '';
+  return '<label class="f"><span>' + l + '</span>' +
+    (rows ? '<textarea rows="' + rows + '" data-b="' + p + '"' + placeholder + '></textarea>'
+          : '<input type="text" data-b="' + p + '"' + placeholder + '>') + '</label>';
+}
+function sld(l, p, max) {
+  var m = max || 10;
+  var def = m === 100 ? 50 : 5;
+  return '<div class="f"><div class="sl"><span>' + l + '</span><b data-out="' + p + '">—</b></div>' +
+    '<input type="range" min="0" max="' + m + '" step="1" value="' + def + '" data-b="' + p + '" aria-label="' + esc(l) + '"></div>';
+}
+function chips(list, sel, act, small) {
+  return '<div class="row">' + list.map(function(c) {
+    var active = Array.isArray(sel) ? sel.indexOf(c[0]) > -1 : sel === c[0];
+    return '<button type="button" class="chip' + (small ? ' sm' : '') + '" data-act="' + act + '" data-v="' + esc(c[0]) + '" aria-pressed="' + active + '">' + c[1] + '</button>';
+  }).join('') + '</div>';
+}
+function pk(t, p) {
+  return '<div class="pk"><span class="v" data-face="' + p + '"></span><input type="' + t + '" data-b="' + p + '" aria-label="' + (t === 'time' ? 'Choose a time' : 'Choose a date') + '"></div>';
+}
+function fmtF(t, v) {
+  if (!v) return t === 'time' ? 'Tap to choose a time' : 'Tap to choose a date';
+  if (t === 'time') {
+    var q = v.split(':'), h = +q[0];
+    return ((h % 12) || 12) + ':' + q[1] + ' ' + (h < 12 ? 'AM' : 'PM');
+  }
+  return new Date(v + 'T12:00:00').toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
+}
+function paintFaces() {
+  document.querySelectorAll('[data-face]').forEach(function(f) {
+    var i = $('[data-b="' + f.dataset.face + '"]');
+    if (!i) return;
+    f.textContent = fmtF(i.type, i.value);
+    f.className = 'v' + (i.value ? '' : ' ph');
+  });
+}
+
+/* ==========================================================================
+   SHARED THINKING TRAPS CATALOG (All 30 CBT Traps + Dessert Core Traps)
+   ========================================================================== */
+var TRAPS = [
+  ['All-or-nothing','All-or-nothing'],['Overgeneralization','Overgeneralization'],['Mental filter','Mental filter'],
+  ['Disqualifying the positive','Disqualifying the positive'],['Minimizing','Minimizing'],['Catastrophizing','Catastrophizing'],
+  ['Emotional reasoning','Emotional reasoning'],['Fortune telling','Fortune telling'],['Mind reading','Mind reading'],
+  ['Should statements','Should statements'],['Labeling','Labeling'],['Personalization','Personalization'],
+  ['Blaming','Blaming'],['Perfectionism','Perfectionism'],['Comparison','Comparison'],
+  ['Control fallacy','Control fallacy'],['Fairness fallacy','Fairness fallacy'],['Change fallacy','Change fallacy'],
+  ['Always being right','Always being right'],['Reward fallacy','Reward fallacy'],['Tomorrow thinking','Tomorrow thinking'],
+  ['Rationalizing','Rationalizing'],['Moral licensing','Moral licensing'],['Low frustration tolerance','Low frustration tolerance'],
+  ['What-if thinking','What-if thinking'],['Hopelessness','Hopelessness'],['Self-handicapping','Self-handicapping'],
+  ['Imposter thinking','Imposter thinking'],['Hindsight bias','Hindsight bias'],['Other','Other']
+];
+var DESSERT_CORE_TRAPS = [
+  ['All-or-nothing','All-or-nothing'],
+  ['Emotional reasoning','Emotional reasoning'],
+  ['Moral licensing','Reward justification'],
+  ['Catastrophizing','Catastrophizing'],
+  ['Tomorrow thinking','Tomorrow thinking'],
+  ['Low frustration tolerance','Low frustration tolerance']
+];
+
+var TRAPM = {
+  'All-or-nothing':'Seeing things in black and white: “I had one bite, so the day is ruined” or “If I can’t do a full workout, it’s pointless.”',
+  'Emotional reasoning':'Treating a feeling or craving as proof of need: “I feel like I need it, so I must” or “I feel unmotivated, so I shouldn’t go.”',
+  'Fortune telling':'Predicting a bad outcome as if it were certain, such as “It’ll be a bad workout.”',
+  'Perfectionism':'Holding yourself to a standard where anything less than a full effort feels pointless.',
+  'Other':'A different unhelpful pattern. Name it in your own words in the thought box.'
+};
+var TOPT = {
+  'All-or-nothing':['It’s not all or nothing. A partial effort or stopping after one bite still counts.','One slip does not undo my progress.','I can do a smaller version today and keep going.'],
+  'Emotional reasoning':['A feeling or craving is not a fact. I can feel an urge and still follow my plan.','Cravings and low motivation change within 10–15 minutes.','I’ll act on my plan first and check how I feel in 15 minutes.'],
+  'Fortune telling':['I can’t know how it will go until I try.','I’ve been surprised by how good I feel afterwards before.','I’ll test the prediction for 10–15 minutes.'],
+  'Perfectionism':['Good enough today beats perfect never.','My minimum version counts as real progress.','Consistency matters more than perfection.'],
+  'Other':['What would I tell a supportive friend in this situation?','What evidence do I have for and against this thought?','What is one small step I can take right now?'],
+  '':['What would I tell a supportive friend in this situation?','What evidence do I have for and against this thought?','What is one small step I can take right now?']
+};
+function addT(k,m,a,b,c){TRAPM[k]=m;TOPT[k]=[a,b,c]}
+addT('Overgeneralization','Taking one event as a never-ending pattern, such as “I slipped once, so I always quit.”','One slip is one event, not a permanent pattern.','Words like “always” and “never” are a sign I am overgeneralizing.','I can list the days I did follow my plan.');
+addT('Mental filter','Focusing on one negative detail and ignoring everything else.','What else went well today, besides the part I am stuck on?','One difficult moment does not cancel the rest of my effort.','I will note three things that went fine.');
+addT('Disqualifying the positive','Dismissing good choices as not counting.','Every time I practice my habit, it counts.','I would count this win for a friend, so I will count it for me.','Progress is progress, even when it feels small.');
+addT('Minimizing','Shrinking your own efforts or strengths.','Showing up consistently is a real achievement.','I would not call a friend’s effort small, so I will not call mine small.','Each healthy choice adds up over time.');
+addT('Catastrophizing','Expecting the worst: “If I don’t eat it, the craving will never stop” or “If I miss today, I’ll lose all progress.”','Urges always peak and pass within 15–20 minutes.','What is the most realistic outcome, not the worst one?','I can ride this out for 15 minutes and reassess.');
+addT('Mind reading','Assuming you know what others think.','I can’t read minds. Most people are focused on themselves.','What is the actual evidence for this assumption?','Even if someone noticed, my health goals come first.');
+addT('Should statements','Rigid rules about how you must feel or behave.','I can swap “should” for “I choose to” or “it helps me to”.','Habits take practice for everyone. That is normal.','I will focus on what works today.');
+addT('Labeling','Attaching a harsh label to yourself, such as “I have no willpower” or “I’m lazy.”','One urge or action does not define who I am.','I am someone rewiring a habit, and that takes practice.','I will describe the trigger instead of judging myself.');
+addT('Personalization','Taking blame for things that are not fully your fault.','Many factors are involved, not just me.','What part is actually in my control right now?','I can make a fresh choice without blaming myself.');
+addT('Blaming','Putting all responsibility on circumstances or others.','What part can I influence right now?','Circumstances matter, and I can still use my replacement ritual.','I will focus on what I can do differently next time.');
+addT('Comparison','Measuring yourself unfairly against others.','I am comparing my practice to someone else’s highlight reel.','The only comparison that matters is my own consistency.','Everyone builds habits one day at a time.');
+addT('Control fallacy','Believing you have zero control over habits or urges.','I can’t control when an urge pops up, but I can choose my closing ritual.','Small choices are within my control right now.','I will focus on the next 10 minutes.');
+addT('Fairness fallacy','Believing things should feel effortless or fair: “Why can’t I eat sweets every day without consequences?”','Wishing it were different doesn’t help me reach my goal.','My goals matter more than momentary fairness complaints.','Closing my meal with tea or a walk is a kindness to my body.');
+addT('Change fallacy','Waiting for life to calm down before practicing your habit.','Stressful days are the exact days my habit ritual helps most.','I can adapt my plan to my real schedule.','My replacement ritual takes less than 5 minutes.');
+addT('Always being right','Insisting your initial urge thought is 100% true.','I can test whether the urge actually lasts if I wait 15 minutes.','Being curious helps more than being right.','What evidence might prove this craving thought wrong?');
+addT('Reward fallacy','Expecting instant results or feeling that hard work demands a food reward.','A true reward leaves me feeling energized, not sluggish.','I will track my effort and celebrate with non-food rewards.','Progress shows up steadily over weeks.');
+addT('Tomorrow thinking','Putting it off: “I’ll start skipping dessert tomorrow” or “I’ll go to the gym tomorrow.”','Tomorrow’s me will face the same cue. Practicing now builds the circuit.','My habit happens today, one meal or session at a time.','Waiting 15 minutes right now beats starting over tomorrow.');
+addT('Rationalizing','Making up reasonable-sounding excuses in the moment.','Is this a genuine need, or a habit craving dressed up as logic?','What would I choose if my long-term goal decided?','I can use my replacement ritual first.');
+addT('Moral licensing','Reward justification: “I worked hard / ate a healthy lunch, so I deserve dessert or a skip.”','Working hard deserves genuine rest or a break, not derailing my goal.','I can treat myself to hot tea, music, or a walk instead.','One good choice is a reason to keep going, not to undo it.');
+addT('Low frustration tolerance','Believing an urge or workout start is unbearable.','An urge is uncomfortable, not unbearable. It fades like a wave.','I have ridden out cravings and tough starts before.','I can handle mild discomfort for 15 minutes.');
+addT('What-if thinking','Getting stuck on “what if” worries.','What is the realistic outcome if I just test my plan?','If a problem happens, I can handle it then.','I will focus on the present step.');
+addT('Hopelessness','Believing “I’ll always crave sweets” or “I never stick to anything.”','Every time I don’t reinforce the urge, the habit loop weakens.','Small repetitions rewire the brain over time.','I only need to focus on today’s choice.');
+addT('Self-handicapping','Keeping tempting desserts on the counter or leaving the gym bag unpacked.','I can set my environment up to make the right choice easy.','What friction can I remove today?','Out of sight makes resisting 10x easier.');
+addT('Imposter thinking','Feeling like you aren’t “the kind of person” who works out or skips sweets.','Identity follows action: each time I do the ritual, I cast a vote for the new habit.','Everyone starts as a beginner.','Showing up today is what counts.');
+addT('Hindsight bias','Beating yourself up after a slip: “I should have known better.”','A slip is data for next time, not a reason for shame.','What triggered it, and how can I adjust my environment?','I return to my plan at the very next meal or day.');
+
+/* ==========================================================================
+   MODE 1: GYM HABIT DATA & VIEWS (100% Preserved)
+   ========================================================================== */
+var F = { trap: '', after: 5 };
+var tabGym = 'today';
+var selGymHistDate = td(); // Selected date for adding/editing historical gym data in Weekly Review
+var gymHistSavedMsg = '';
+var T = { end: 0, done: false, iv: null };
+var CM = 0, DA = false, TM = '', LP = false, LT = 0, EP = false;
+var DN = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+var ST = [['went','Went'],['short','Short session'],['rest','Rest day'],['skipped','Skipped']];
+var COMMON_GYM = [
+  ['I\u2019m too tired.','Light movement often lifts energy. I\u2019ll start and decide after 10 minutes.'],
+  ['If I can\u2019t do a full session, it\u2019s pointless.','A short session still builds the habit. My minimum version counts.'],
+  ['It\u2019ll be a bad workout.','I can\u2019t predict that. I\u2019ll test it for 10 minutes and see.'],
+  ['I don\u2019t feel motivated, so I shouldn\u2019t go.','Motivation usually follows action. I only need to decide whether to start.'],
+  ['I missed a day, so this week is ruined.','One miss is information, not failure. I\u2019ll reschedule within 24 hours.']
+];
+var OPT_GYM = [
+  ['Light movement often lifts energy. I’ll start and decide after 10 minutes.','Feeling tired is not the same as being unable. I can do my minimum version.','Today is a gym day, so I’ll go and keep it gentle.'],
+  ['A short session still builds the habit. My minimum version counts.','Showing up is the habit. Intensity can come later.','Twenty minutes is better than zero, and it keeps my streak alive.'],
+  ['I can’t predict that. I’ll test it for 10 minutes and see.','Most of my past sessions felt better afterwards than I expected.','Even an average workout moves me toward my goal.'],
+  ['Motivation usually follows action. I only need to decide whether to start.','I don’t need to feel like it. I need to follow the plan I made.','I’ll change into gym clothes and decide after 10 minutes.'],
+  ['One miss is information, not failure. I’ll reschedule within 24 hours.','The week isn’t over. I can still reach 4 sessions.','My rule is never miss twice, so today is the day to go.']
+];
+var TABS_GYM = [
+  ['today','Today'],['plan','Plan'],['thoughts','Thoughts'],['week','Week'],['slip','Slip'],['history','History']
+];
+
+function didGym(k) { var l = S.logs[k]; return !!l && (l.st === 'went' || l.st === 'short'); }
+function cntGym(ws) { var n = 0; for (var i = 0; i < 7; i++) if (didGym(iso(addD(ws, i)))) n++; return n; }
+function streakGym() {
+  var w = mon(new Date()), n = 0;
+  if (cntGym(w) >= 4) n++;
+  w = addD(w, -7);
+  while (cntGym(w) >= 4 && n < 520) { n++; w = addD(w, -7); }
+  return n;
+}
+function avgChangeGym() {
+  var a = [];
+  for (var k in S.logs) {
+    var l = S.logs[k];
+    if (typeof l.before === 'number' && typeof l.after === 'number') a.push(l.after - l.before);
+  }
+  return a.length ? { n: a.length, v: a.reduce(function(x, y) { return x + y; }, 0) / a.length } : null;
+}
+function tmeaning() {
+  return TM ? '<div class="note"><b>' + esc(TM) + '.</b> ' + esc(TRAPM[TM] || '') + '</div>'
+            : '<p class="mu" style="margin:8px 0 0">Long-press any trap chip to see what it means.</p>';
+}
+function altListGym() {
+  return (F.ci !== undefined && COMMON_GYM[F.ci] && F.thought === COMMON_GYM[F.ci][0])
+    ? OPT_GYM[F.ci] : (TOPT[F.trap || ''] || TOPT['']);
+}
+function altOptsGym() {
+  return '<div class="f"><span>Balanced alternative options</span><p class="mu" style="margin:0 0 6px">Tap one to use it, or write your own below.</p>' +
+    altListGym().map(function(t, i) {
+      return '<button type="button" class="chip" style="display:block;width:100%;text-align:left;margin:6px 0;border-radius:14px" data-act="alt" data-v="' + i + '" aria-pressed="' + (F.alt === t) + '">' + t + '</button>';
+    }).join('') + '</div>';
+}
+function planCardGym(open) {
+  var w = S.weeks[WK()] || {}, p = w.days || [], ws = mon(new Date()), ti = (new Date().getDay() + 6) % 7, n = p.length, done = 0;
+  if (w.set && n && !open && !EP) {
+    return '<div class="card"><h2>This week’s plan</h2><p>' + p.slice().sort().map(function(i) { return DN[i]; }).join(' · ') + '</p><p class="mu">' + (p.indexOf(ti) > -1 ? 'Today is a planned gym day.' : 'Today is a planned rest day.') + '</p><button type="button" class="btn alt" data-act="pe">Change days</button></div>';
+  }
+  p.forEach(function(i) { if (didGym(iso(addD(ws, i)))) done++; });
+  var h = '<div class="card"><h2>' + (ti === 0 && !n ? 'It’s Monday: choose your gym days' : 'Plan your week') + '</h2><p class="mu">Pick the days you will go to the gym this week. Your goal is at least 4.</p><div class="dg">' +
+    DN.map(function(d, i) {
+      return '<button type="button" class="chip" data-act="pd" data-v="' + i + '" aria-pressed="' + (p.indexOf(i) > -1) + '">' + d + '</button>';
+    }).join('') + '</div>';
+  h += '<p class="mu" style="margin-top:10px">' + n + ' day' + (n === 1 ? '' : 's') + ' selected' + (n && n < 4 ? '. Pick at least 4 to match your goal.' : '') + (n ? ' · Done on planned days: ' + done + ' of ' + n : '') + '</p>';
+  if (!open && n) h += '<button type="button" class="btn" data-act="pdone">Done</button>';
+  return h + '</div>';
+}
+
+function vGymToday() {
+  var k = td(), l = S.logs[k] || {}, y = S.logs[iso(addD(new Date(), -1))], h = '';
+  h += '<h1>Today · Gym Habit</h1><p class="mu">' + new Date().toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long' }) + '</p>';
+  h += planCardGym(false);
+  if (y && y.st === 'skipped' && !didGym(k)) h += '<div class="note w">Yesterday was skipped. Today is the day not to miss twice in a row.</div>';
+  h += '<div class="card"><h2>Daily log</h2><p class="mu">Fill this in on every day, including rest days and skipped days.</p>' + chips(ST, l.st, 'st');
+  h += sld('Motivation before (0–10)', 'log.before') + sld('Mood after (0–10)', 'log.after');
+  h += fld('Notes', 'log.note', 2);
+  if (S.logs[k]) {
+    h += '<label class="chk"><input type="checkbox" data-act="arm"' + (DA ? ' checked' : '') + '>Delete today’s entry</label>';
+    if (DA) h += '<div class="note w">This removes today’s status, ratings and notes and cannot be undone.</div><button type="button" class="btn" style="background:var(--warn);color:var(--wt)" data-act="del">Delete entry now</button>';
+  }
+  h += '</div>';
+  h += '<div class="card" id="tmc"></div>';
+  return h;
+}
+function tmHTMLGym() {
+  var h = '<h2>The 10-minute rule</h2>';
+  if (T.end > Date.now()) {
+    var s = Math.max(0, Math.ceil((T.end - Date.now()) / 1000));
+    h += '<div class="tm" aria-live="off">' + Math.floor(s / 60) + ':' + ('0' + s % 60).slice(-2) + '</div><p class="mu" style="text-align:center">Do the easiest part of your plan.</p><button type="button" class="btn alt" data-act="tstop">Stop timer</button>';
+  } else if (T.done) {
+    h += '<div class="note"><b>10 minutes done.</b> Rate your motivation again in the log above, then choose: continue, shorten or stop. Stopping now still counts as showing up.</div><button type="button" class="btn" data-act="tstart">Start another 10 minutes</button>';
+  } else {
+    h += '<p>On low-motivation days, decide only whether to <b>start</b>, not whether to finish.</p><p class="mu">1) Change into gym clothes and go. 2) Do 10 minutes of the easiest part. 3) Rate your motivation again. 4) Continue, shorten or stop.</p><button type="button" class="btn" data-act="tstart">Start 10-minute timer</button>';
+  }
+  return h;
+}
+function vGymPlan() {
+  return '<h1>My Gym Plan</h1><p class="mu">Specific days, times and backups beat “I\u2019ll go when I can”.</p>' +
+    '<div class="card"><h2>Goal</h2><p>Go to the gym at least 4 times a week.</p>' + fld('Minimum version (the floor on bad days)', 'plan.min', 2) + '<p class="mu">Example: a 20-minute session counts. Showing up and doing the warm-up counts.</p></div>' +
+    '<div class="card"><h2>If-then plans</h2><div class="f"><span>If it is this time…</span>' + pk('time', 'plan.time') + '</div>' + fld('…on these days, then I will leave for the gym', 'plan.days') +
+    fld('If I feel tired, then I will…', 'plan.tired', 2) + fld('If I miss a planned session, then I will…', 'plan.miss', 2) + '</div>' +
+    '<div class="card"><h2>Making it easier</h2><label class="chk"><input type="checkbox" data-b="plan.bag">Gym bag packed the night before</label><label class="chk"><input type="checkbox" data-b="plan.clothes">Clothes laid out</label>' +
+    fld('Workout buddy or class booked', 'plan.buddy') + fld('Playlist or podcast saved for gym time only', 'plan.list') + '</div>' +
+    '<p class="mu">A self-help worksheet based on standard CBT methods. It is not a substitute for care from a licensed therapist.</p>';
+}
+function vGymThoughts() {
+  var h = '<h1>Thought Record · Gym</h1><p class="mu">Use this whenever you catch yourself thinking of skipping.</p>';
+  h += '<div class="card"><h2>Common thoughts</h2><p class="mu">Tap one to fill in the thought below.</p>' + COMMON_GYM.map(function(c, i) {
+    return '<button type="button" class="chip" style="display:block;width:100%;text-align:left;margin:6px 0" data-act="fill" data-v="' + i + '">' + c[0] + '</button>';
+  }).join('') + '</div>';
+  h += '<div class="card"><h2>New record</h2>' + fld('Situation (time, place, what happened)', 'f.sit', 2) + fld('The thought that came up', 'f.thought', 2) + '<div class="f"><span>The thinking trap</span>' + chips(TRAPS, F.trap, 'trap') + tmeaning() + '</div>' + altOptsGym() + fld('My balanced alternative thought', 'f.alt', 3) + sld('Motivation after (0–10)', 'f.after') + '<button type="button" class="btn" data-act="tsave">Save record</button></div>';
+  if (S.thoughts.length) {
+    h += '<div class="card"><h2>Saved records</h2>' + S.thoughts.slice().reverse().slice(0, 8).map(function(r, i) {
+      var idx = S.thoughts.length - 1 - i;
+      return '<div class="rec"><button type="button" class="x" data-act="tdel" data-v="' + idx + '" aria-label="Delete record">×</button><b>' + esc(r.thought) + '</b><br>' + (r.trap ? '<span class="mu">' + esc(r.trap) + '</span><br>' : '') + esc(r.alt) + '<br><span class="mu">' + esc(r.d) + (typeof r.after === 'number' ? ' · motivation after: ' + r.after : '') + '</span></div>';
+    }).join('') + '</div>';
+  }
+  return h;
+}
+function vGymWeek() {
+  var ws = mon(new Date()), pl = (S.weeks[WK()] || {}).days, n = cntGym(ws), a = avgChangeGym(), h = '';
+  h += '<h1>Weekly Review · Gym</h1><div class="card"><div class="big">' + n + ' / 4</div><p class="mu">sessions this week (a short session counts)</p><div class="bar"><i style="width:' + Math.min(100, n / 4 * 100) + '%"></i></div><div class="dots">';
+  for (var i = 0; i < 7; i++) {
+    var k = iso(addD(ws, i));
+    h += '<div class="dot' + (didGym(k) ? ' on' : '') + (k === td() ? ' now' : '') + (pl && pl.indexOf(i) > -1 ? ' pl' : '') + '" style="cursor:pointer" data-act="ghday" data-v="' + k + '" title="Tap to log ' + DN[i] + '"><i></i>' + DN[i] + '</div>';
+  }
+  h += '</div>' + (pl && pl.length ? '<p class="mu">Outlined days are your planned gym days. Tap any day above to log or edit it.</p>' : '<p class="mu">Tap any day above or use the historical logger below to log past sessions.</p>') + '<p><b>Streak:</b> ' + streakGym() + ' week' + (streakGym() === 1 ? '' : 's') + ' with 4 or more sessions</p></div>';
+  h += planCardGym(true);
+
+  // Add / Edit Historical Gym Data Card
+  var hl = S.logs[selGymHistDate] || {};
+  var hdLabel = new Date(selGymHistDate + 'T12:00:00').toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'short', year: 'numeric' });
+  h += '<div class="card"><h2>Add or edit historical data</h2><p class="mu">Backfill or update a past day so your weekly count, streak, and mood patterns stay accurate.</p>';
+  h += '<div class="f"><span>Choose date</span>' + pk('date', 'ghist.date') + '</div>';
+  h += '<div class="f"><span>Quick-pick from this week</span><div class="dg">';
+  for (var j = 0; j < 7; j++) {
+    var wkDayKey = iso(addD(ws, j));
+    var hasWkEntry = !!S.logs[wkDayKey] && !!S.logs[wkDayKey].st;
+    h += '<button type="button" class="chip' + (hasWkEntry ? ' has' : '') + '" data-act="ghday" data-v="' + wkDayKey + '" aria-pressed="' + (selGymHistDate === wkDayKey) + '"><span>' + DN[j] + '</span><i></i></button>';
+  }
+  h += '</div></div>';
+  h += '<p class="mu" style="margin:6px 0 10px">Editing: <b>' + esc(hdLabel) + (selGymHistDate === td() ? ' (Today)' : '') + '</b></p>';
+  h += '<div class="f"><span>Status on this date</span>' + chips(ST, hl.st || '', 'ghst') + '</div>';
+  h += sld('Motivation before (0–10)', 'ghlog.before') + sld('Mood after (0–10)', 'ghlog.after');
+  h += fld('Notes', 'ghlog.note', 2, 'Optional workout or rest day notes...');
+  if (gymHistSavedMsg) h += '<div class="note">' + esc(gymHistSavedMsg) + '</div>';
+  h += '<button type="button" class="btn" data-act="ghsave">Save entry for ' + esc(new Date(selGymHistDate + 'T12:00:00').toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })) + '</button>';
+  if (S.logs[selGymHistDate]) {
+    h += '<button type="button" class="btn alt" data-act="ghdel">Delete entry for this date</button>';
+  }
+  h += '</div>';
+
+  h += '<div class="card"><h2>Pattern check</h2>' + (a ? '<p>Average mood change (after minus before): <b>' + (a.v > 0 ? '+' : '') + a.v.toFixed(1) + '</b> across ' + a.n + ' day' + (a.n === 1 ? '' : 's') + '.</p><p class="mu">Most people find mood after is higher than they predicted.</p>' : '<p class="mu">Rate motivation before and mood after in the daily log to see your pattern here.</p>') + '</div>';
+  h += '<div class="card"><h2>This week</h2>' + fld('What worked?', 'wk.worked', 2) + fld('What got in the way?', 'wk.hard', 2) + fld('Progress reward (non-food)', 'wk.reward') + '</div>';
+  h += '<div class="note"><b>When to seek extra support.</b> Talk to a doctor or psychologist if low motivation comes with persistent low mood, loss of interest in most activities, or exhaustion that doesn\u2019t lift. Also check in if exercise feels compulsive, you feel intense guilt after rest days, or you train through pain or injury.</div>';
+  return h;
+}
+function vGymSlip() {
+  var h = '<h1>Slip Recovery · Gym</h1><div class="note">Missing a session is information, not failure. Answer these, then book your next session before you close this page. <b>Never miss twice in a row.</b></div>';
+  h += '<div class="card">' + fld('What got in the way?', 'f.a', 2) + fld('What was I thinking and feeling?', 'f.b', 2) + fld('Was the plan unrealistic, or did a thought stop me?', 'f.c', 2) + fld('What will I do differently next time?', 'f.d', 2) +
+    '<div class="f"><span>My next session is on</span>' + pk('date', 'f.day') + '</div><div class="f"><span>at</span>' + pk('time', 'f.time') + '</div><button type="button" class="btn" data-act="ssave">Save and book next session</button></div>';
+  if (S.slips.length) {
+    h += '<div class="card"><h2>Earlier slips</h2>' + S.slips.slice().reverse().slice(0, 5).map(function(r) {
+      return '<div class="rec"><b>' + esc(r.d) + '</b><br>' + esc(r.a) + '<br>Next: ' + esc(r.day) + ' ' + esc(r.time) + '<br><span class="mu">Plan: ' + esc(r.dd) + '</span></div>';
+    }).join('') + '</div>';
+  }
+  return h;
+}
+function vGymCal() {
+  var n = new Date(), b = new Date(n.getFullYear(), n.getMonth() + CM, 1), y = b.getFullYear(), m = b.getMonth(), dim = new Date(y, m + 1, 0).getDate(), off = (b.getDay() + 6) % 7, c = { went: 0, short: 0, rest: 0, skipped: 0 }, cells = '', i, d, k, st;
+  for (i = 0; i < off; i++) cells += '<div></div>';
+  for (d = 1; d <= dim; d++) {
+    k = y + '-' + ('0' + (m + 1)).slice(-2) + '-' + ('0' + d).slice(-2);
+    st = (S.logs[k] || {}).st;
+    if (c[st] !== undefined) c[st]++;
+    cells += '<div class="cd ' + (st || '') + (k === td() ? ' now' : '') + '">' + d + '</div>';
+  }
+  var t = c.went + c.short, h = '<div class="card"><div class="cm"><button type="button" class="chip" data-act="cm" data-v="-1" aria-label="Previous month">‹</button><h2>' + b.toLocaleDateString('en-IN', { month: 'long', year: 'numeric' }) + '</h2><button type="button" class="chip" data-act="cm" data-v="1" aria-label="Next month"' + (CM >= 0 ? ' disabled style="opacity:.4"' : '') + '>›</button></div>';
+  h += '<p style="margin-top:12px"><span class="big">' + t + '</span> <span class="mu">day' + (t === 1 ? '' : 's') + ' at the gym this month</span></p><p class="mu">Went ' + c.went + ' · Short session ' + c.short + ' · Rest day ' + c.rest + ' · Skipped ' + c.skipped + '</p>';
+  h += '<div class="cal">' + ['M', 'T', 'W', 'T', 'F', 'S', 'S'].map(function(x) { return '<div class="cw">' + x + '</div>'; }).join('') + cells + '</div>';
+  h += '<div class="lg"><span><i class="a"></i>Went</span><span><i class="b"></i>Short session</span><span><i></i>Rest day</span><span><i class="c"></i>Skipped</span></div></div>';
+  return h;
+}
+function backupCardHTML() {
+  return '<div class="card"><h2>Unified Backup & Restore</h2><p class="mu">Your data lives privately on this phone. This backup contains both your <b>Gym Habit</b> and <b>Skip Dessert</b> data (you can also paste a single-program backup to restore).</p><textarea id="bk" rows="5" aria-label="Backup data"></textarea><button type="button" class="btn" data-act="copy">Copy backup</button><button type="button" class="btn alt" data-act="restore">Restore from pasted backup</button><p class="mu" id="bkm"></p></div>';
+}
+function vGymHistory() {
+  var ks = Object.keys(S.logs).sort().reverse(), L = { went: 'Went', short: 'Short session', rest: 'Rest day', skipped: 'Skipped' };
+  var h = '<h1>History · Gym</h1>' + vGymCal() + '<h2>All entries</h2><p class="mu">Every day you have logged, newest first.</p>';
+  h += '<div class="card">' + (ks.length ? ks.map(function(k) {
+    var l = S.logs[k], d = new Date(k + 'T12:00:00');
+    return '<div class="rec"><b>' + d.toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' }) + '</b> · ' + (L[l.st] || 'No status') + '<br><span class="mu">' + (typeof l.before === 'number' ? 'Motivation before ' + l.before : '') + (typeof l.after === 'number' ? ' · Mood after ' + l.after : '') + '</span>' + (l.note ? '<br>' + esc(l.note) : '') + '</div>';
+  }).join('') : '<p class="mu">No days logged yet. Use the Today tab to add your first one.</p>') + '</div>';
+  h += backupCardHTML();
+  return h;
+}
+
+
+/* ==========================================================================
+   MODE 2: SKIP DESSERT AFTER LUNCH (6-Part CBT Worksheet Implementation)
+   ========================================================================== */
+var tabDes = 'today';
+var selDesDate = td(); // Selected day key in Part 1 (defaults to today)
+var FD = { sit: '', thought: '', emo: '', before: 70, trap: '', evFor: '', evAgainst: '', alt: '', after: 25, act: '' };
+var showAllTrapsDes = false;
+var TS = { startAt: 0, end: 0, total: 1200, done: false, stoppedNote: '', iv: null }, UST = TS; // 20-min Urge Surfing Timer (1200s)
+
+var TABS_DES = [
+  ['today','1. Log'],
+  ['thoughts','2. Thoughts'],
+  ['surf','3. Surf'],
+  ['plan','4. Ritual'],
+  ['week','5. Week'],
+  ['slip','6. Slip/Hist']
+];
+
+var ST_DES = [
+  ['skipped_d','🛡️ Skipped dessert'],
+  ['ritual','🍵 Used ritual'],
+  ['portion','🍓 Planned portion'],
+  ['ate','🍰 Ate dessert']
+];
+var TRIGGERS_DES = [
+  ['Finishing the plate','Finishing the plate'],
+  ['Seeing the dessert','Seeing the dessert'],
+  ['Stressful morning','Stressful morning'],
+  ['Boredom','Boredom'],
+  ['Coworkers eating sweets','Coworkers eating sweets'],
+  ['Tiredness / low energy','Tiredness / low energy'],
+  ['Habit / automatic cue','Habit / automatic cue']
+];
+var MOODS_DES = [
+  ['Proud & calm','😌 Proud & calm'],
+  ['Energized & light','⚡ Energized & light'],
+  ['Neutral','😐 Neutral'],
+  ['Still craving','😤 Still craving'],
+  ['Sluggish / heavy','😴 Sluggish / heavy'],
+  ['Regretful','😔 Regretful']
+];
+var COMMON_DES = [
+  ['I had one bite, so the day is ruined.', 'All-or-nothing', 'One bite does not ruin my day. Stopping now is a win, and my next choice is right now.'],
+  ['I feel like I need it, so I must.', 'Emotional reasoning', 'Feeling a strong urge is just a conditioned brain signal after lunch, not a physical need.'],
+  ['I worked hard, I deserve it.', 'Moral licensing', 'I did work hard, and I deserve a reward that actually gives me energy—like tea or a 5-minute walk.'],
+  ['If I don\u2019t eat it, the craving will never stop.', 'Catastrophizing', 'No craving lasts forever. Urges rise, peak, and fade within 15 to 20 minutes if I ride them out.']
+];
+var OPT_DES_BY_TRAP = {
+  'All-or-nothing': [
+    'One bite or one slip does not ruin the day. Stopping now still counts.',
+    '“Meal ends, sweet begins” is just an old habit. Mint tea or gum can close my meal instead.',
+    'Progress is built on consistency, not perfection.'
+  ],
+  'Emotional reasoning': [
+    'Feeling like I need sugar is a temporary urge wave, not a biological requirement.',
+    'My body just had a nourishing lunch; this craving is a conditioned cue that will pass.',
+    'I can acknowledge the urge without obeying it.'
+  ],
+  'Moral licensing': [
+    'I worked hard today, and a better reward is avoiding the 3 PM sugar crash.',
+    'I can treat myself with a relaxing break, hot tea, or a walk outside.',
+    'Deserving a break doesn’t mean undermining a goal I care about.'
+  ],
+  'Catastrophizing': [
+    'Every urge peaks and falls within 15–20 minutes. I only need to wait 15 minutes.',
+    'It feels intense right now, but it is temporary and harmless.',
+    'I’ll start the Urge Surfing timer and check how I feel in 10 minutes.'
+  ]
+};
+var RITUAL_OPTS = [
+  ['Tea or coffee','☕ Tea or coffee'],
+  ['Brush my teeth','🪥 Brush my teeth'],
+  ['Chew mint gum','🌿 Chew mint gum'],
+  ['Walk for 5 to 10 minutes','🚶 Walk 5–10 min'],
+  ['Call or message a friend','💬 Call/message friend'],
+  ['Drink a glass of water','💧 Glass of water']
+];
+var SURF_STEPS = [0, 5, 10, 15, 20];
+var BODY_CHIPS = [
+  ['Mouth watering','Mouth watering'],
+  ['Restlessness','Restlessness'],
+  ['Mind bargaining','Mind bargaining'],
+  ['Stomach is actually full','Stomach actually full'],
+  ['Feeling calmer','Feeling calmer']
+];
+var RIDE_CHIPS = [
+  ['Sipping water or tea','Sipping water/tea'],
+  ['Deep slow breaths','Deep breaths'],
+  ['Left the kitchen/table','Left table'],
+  ['Chewing mint gum','Chewing mint gum'],
+  ['Short walk','Short walk']
+];
+
+function didSkipDes(k) {
+  var l = D.logs[k];
+  return !!l && (l.st === 'skipped_d' || l.st === 'ritual' || l.st === 'portion');
+}
+function didRitualDes(k) {
+  var l = D.logs[k];
+  return !!l && (l.st === 'ritual' || (l.what && l.what.toLowerCase().indexOf('ritual') > -1));
+}
+function detectTopTriggerDes() {
+  var counts = {}, best = '', max = 0;
+  for (var k in D.logs) {
+    var tr = (D.logs[k].trig || '').trim();
+    if (!tr) continue;
+    counts[tr] = (counts[tr] || 0) + 1;
+    if (counts[tr] > max) { max = counts[tr]; best = tr; }
+  }
+  return best ? best + ' (' + max + 'x)' : '';
+}
+
+/* Part 1: Daily Trigger Log */
+function vDesToday() {
+  var ws = mon(new Date());
+  var curLog = D.logs[selDesDate] || {};
+  var h = '';
+  h += '<h1>Part 1 · Daily Trigger Log</h1>';
+  h += '<p class="mu">Complete this right after lunch, whether or not you ate dessert.</p>';
+
+  // Week Day Selector (Mon-Sun)
+  h += '<div class="card"><h2>Select day of this week</h2><div class="dg">';
+  for (var i = 0; i < 7; i++) {
+    var dKey = iso(addD(ws, i));
+    var hasEntry = !!D.logs[dKey] && !!(D.logs[dKey].st || D.logs[dKey].trig || D.logs[dKey].thought);
+    h += '<button type="button" class="chip' + (hasEntry ? ' has' : '') + '" data-act="dday" data-v="' + dKey + '" aria-pressed="' + (selDesDate === dKey) + '"><span>' + DN[i] + '</span><i></i></button>';
+  }
+  h += '</div><p class="mu" style="margin-top:8px;margin-bottom:0">Logging for: <b>' + new Date(selDesDate + 'T12:00:00').toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'short' }) + (selDesDate === td() ? ' (Today)' : '') + '</b></p></div>';
+
+  // Daily Trigger Form
+  h += '<div class="card"><h2>Right after lunch</h2>';
+  h += '<div class="f"><span>What I did</span>' + chips(ST_DES, curLog.st || '', 'dst') + '</div>';
+  h += sld('Hunger before lunch (0–10)', 'dlog.hunger');
+  h += '<div class="f"><span>Trigger (what happened just before the urge?)</span>' + chips(TRIGGERS_DES, curLog.trig || '', 'dtrig', true) + '<div style="margin-top:8px"><input type="text" data-b="dlog.trig" placeholder="Tap a chip above or type what happened..."></div></div>';
+  h += fld('Thought (what went through my mind?)', 'dlog.thought', 2, 'e.g., "I need something sweet to finish lunch"');
+  h += sld('Urge strength (0–10)', 'dlog.urge');
+  h += fld('What I did (details / replacement action)', 'dlog.what', 1, 'e.g., Made peppermint tea and went for a 5-min walk');
+  h += '<div class="f"><span>Mood afterward</span>' + chips(MOODS_DES, curLog.mood || '', 'dmood', true) + '<div style="margin-top:8px"><input type="text" data-b="dlog.mood" placeholder="How did you feel afterward?"></div></div>';
+
+  if (D.logs[selDesDate]) {
+    h += '<label class="chk"><input type="checkbox" data-act="arm"' + (DA ? ' checked' : '') + '>Delete this day’s entry</label>';
+    if (DA) h += '<div class="note w">This removes this day’s trigger log entry and cannot be undone.</div><button type="button" class="btn" style="background:var(--warn);color:var(--wt)" data-act="ddel">Delete entry now</button>';
+  }
+  h += '</div>';
+
+  // Weekly Table Summary + Pattern Check
+  var autoTrig = detectTopTriggerDes();
+  h += '<div class="card"><h2>Pattern check (Mon–Sun)</h2>';
+  h += '<p class="mu">After a week, look for common triggers (finishing the plate, seeing the dessert, a stressful morning, boredom, coworkers eating sweets).</p>';
+  if (autoTrig) h += '<div class="note"><b>Auto-detected frequent trigger:</b> ' + esc(autoTrig) + '</div>';
+  h += fld('My most common trigger', 'dplan.commonTrigger', 1, 'Write your #1 trigger pattern here...');
+  h += '<div style="overflow-x:auto"><table class="tbl"><thead><tr><th>Day</th><th>Hunger</th><th>Trigger & Thought</th><th>Urge</th><th>Did / Mood</th></tr></thead><tbody>';
+  var LBL = { skipped_d: 'Skipped', ritual: 'Used ritual', portion: 'Planned', ate: 'Ate dessert' };
+  for (var j = 0; j < 7; j++) {
+    var k2 = iso(addD(ws, j)), lg = D.logs[k2] || {};
+    h += '<tr style="cursor:pointer" data-act="dday" data-v="' + k2 + '"><td><b>' + DN[j] + '</b></td><td>' + (typeof lg.hunger === 'number' ? lg.hunger : '—') + '</td><td>' + esc(lg.trig || '—') + (lg.thought ? '<br><span class="mu">“' + esc(lg.thought) + '”</span>' : '') + '</td><td>' + (typeof lg.urge === 'number' ? lg.urge : '—') + '</td><td>' + esc(LBL[lg.st] || lg.what || '—') + (lg.mood ? '<br><span class="mu">' + esc(lg.mood) + '</span>' : '') + '</td></tr>';
+  }
+  h += '</tbody></table></div></div>';
+  return h;
+}
+
+/* Part 2: Thought Record */
+function altListDes() {
+  if (FD.trap && OPT_DES_BY_TRAP[FD.trap]) return OPT_DES_BY_TRAP[FD.trap];
+  return TOPT[FD.trap || ''] || TOPT[''];
+}
+function vDesThoughts() {
+  var h = '<h1>Part 2 · Thought Record</h1><p class="mu">Use this each time a strong urge for dessert comes up.</p>';
+
+  // Common Thinking Traps to Watch For
+  h += '<div class="card"><h2>Common thinking traps to watch for</h2><p class="mu">Tap a common craving thought below to pre-fill the worksheet:</p>';
+  h += COMMON_DES.map(function(c, i) {
+    return '<button type="button" class="chip" style="display:block;width:100%;text-align:left;margin:6px 0;border-radius:14px" data-act="dfill" data-v="' + i + '"><b>' + esc(c[1] === 'Moral licensing' ? 'Reward justification' : c[1]) + ':</b> “' + esc(c[0]) + '”</button>';
+  }).join('');
+  h += fld('The trap I fall into most', 'dplan.favTrap', 1, 'e.g., Reward justification ("I worked hard, I deserve it")');
+  h += '</div>';
+
+  // 8-Step Thought Record Form
+  var beforeVal = typeof FD.before === 'number' ? FD.before : 70;
+  var afterVal = typeof FD.after === 'number' ? FD.after : 25;
+  var delta = beforeVal - afterVal;
+
+  h += '<div class="card"><h2>Challenge an urge thought</h2>';
+  h += fld('1. Situation (where, when, with whom?)', 'fd.sit', 2, 'e.g., 1:30 PM at my desk right after finishing my lunch plate');
+  h += fld('2. Automatic thought (what went through my mind?)', 'fd.thought', 2, 'e.g., "I worked hard this morning, I deserve something sweet."');
+  h += fld('3a. Emotion (name the feeling)', 'fd.emo', 1, 'e.g., Stressed, restless, bored, deprived');
+  h += sld('3b. Initial urge rating (0–100)', 'fd.before', 100);
+
+  var trapPool = showAllTrapsDes ? TRAPS : DESSERT_CORE_TRAPS;
+  h += '<div class="f"><span>Thinking trap (tap to select, long-press for meaning)</span>' + chips(trapPool, FD.trap, 'dtrap') +
+    '<button type="button" class="chip sm" style="margin-top:8px" data-act="dtoggletraps">' + (showAllTrapsDes ? 'Show core dessert traps' : 'Show all 30 CBT traps') + '</button>' +
+    tmeaning() + '</div>';
+
+  h += fld('4. Evidence for the thought', 'fd.evFor', 2, 'What facts support this thought?');
+  h += fld('5. Evidence against the thought', 'fd.evAgainst', 2, 'What facts contradict it? (e.g., Sugar makes me tired at 3 PM; urges pass in 15 mins)');
+
+  h += '<div class="f"><span>Suggested balanced thoughts (tap to use)</span>' +
+    altListDes().map(function(t, i) {
+      return '<button type="button" class="chip" style="display:block;width:100%;text-align:left;margin:6px 0;border-radius:14px" data-act="dalt" data-v="' + i + '" aria-pressed="' + (FD.alt === t) + '">' + esc(t) + '</button>';
+    }).join('') + '</div>';
+
+  h += fld('6. Balanced thought (a fair, realistic alternative)', 'fd.alt', 3, 'Write a fair, realistic alternative thought...');
+  h += sld('7. Urge rating now (0–100)', 'fd.after', 100);
+  h += '<div class="note" id="d-urge-delta"><b>Urge change:</b> ' + (delta > 0 ? '↓ ' + delta + ' points drop (from ' + beforeVal + ' to ' + afterVal + ')' : (delta < 0 ? '↑ ' + Math.abs(delta) + ' points' : 'No change (' + beforeVal + ')')) + '</div>';
+  h += fld('8. What I chose to do', 'fd.act', 1, 'e.g., Brewed mint tea and waited 15 minutes');
+  h += '<button type="button" class="btn" data-act="dtsave">Save thought record</button></div>';
+
+  if (D.thoughts.length) {
+    h += '<div class="card"><h2>Saved thought records</h2>' + D.thoughts.slice().reverse().slice(0, 10).map(function(r, i) {
+      var idx = D.thoughts.length - 1 - i;
+      return '<div class="rec"><button type="button" class="x" data-act="dtdel" data-v="' + idx + '" aria-label="Delete record">×</button><b>“' + esc(r.thought) + '”</b><br>' +
+        (r.trap ? '<span class="mu">Trap: ' + esc(r.trap) + (r.emo ? ' · Emotion: ' + esc(r.emo) : '') + '</span><br>' : '') +
+        '<b>Balanced:</b> ' + esc(r.alt) + '<br>' +
+        (r.act ? '<span>Did: ' + esc(r.act) + '</span><br>' : '') +
+        '<span class="mu">' + esc(r.d) + ' · Urge: ' + r.before + ' → ' + r.after + '</span></div>';
+    }).join('') + '</div>';
+  }
+  return h;
+}
+
+/* Part 3: Urge Surfing Log & 20-Min Timer */
+function tmHTMLDes() {
+  var h = '<h2>20-Minute Urge Surfing Timer</h2>';
+  if (TS.end > Date.now()) {
+    var rem = Math.max(0, Math.ceil((TS.end - Date.now()) / 1000));
+    var elapSec = Math.max(0, Math.round((Date.now() - (TS.startAt || (TS.end - 1200000))) / 1000));
+    var elapMin = Math.floor(elapSec / 60);
+    var nearStep = Math.min(20, Math.floor(elapMin / 5) * 5);
+    h += '<div class="tm" aria-live="off">' + Math.floor(rem / 60) + ':' + ('0' + (rem % 60)).slice(-2) + '</div>';
+    h += '<p class="mu" style="text-align:center">Elapsed: ' + elapMin + 'm ' + (elapSec % 60) + 's · Current checkpoint: <b>' + nearStep + ' min</b></p>';
+    h += '<button type="button" class="btn alt" data-act="sstop">Stop timer — Urge passed</button>';
+  } else if (TS.done) {
+    h += '<div class="note"><b>20 minutes complete!</b> Automatically recorded <b>20 minutes</b> below. Rate your 20 min urge and save your wave.</div><button type="button" class="btn" data-act="sstart">Restart 20-minute timer</button>';
+  } else {
+    h += '<p>When the urge hits, wait 15 to 20 minutes and rate it every 5 minutes without acting on it. <b>When you stop the timer, your urge duration is automatically recorded below.</b></p>';
+    if (TS.stoppedNote) h += '<div class="note">' + esc(TS.stoppedNote) + '</div>';
+    h += '<button type="button" class="btn" data-act="sstart">Start 20-minute timer</button>';
+  }
+  return h;
+}
+function vDesSurf() {
+  var step = D.surfDraft.step || 0;
+  var pts = D.surfDraft.pts || defaultSurfIntervals();
+  var cur = pts[step] || { urge: null, body: '', act: '' };
+  var curHasUrge = typeof cur.urge === 'number' && !isNaN(cur.urge);
+
+  var h = '<h1>Part 3 · Urge Surfing Log</h1><p class="mu">Ride out the post-lunch craving wave and rate it every 5 minutes.</p>';
+  h += '<div class="card" id="stmc">' + tmHTMLDes() + '</div>';
+
+  // Live Wave Chart + Checkpoint Selector
+  h += '<div class="card"><h2>Urge Wave (0 to 20 min)</h2><p class="mu">Tap any 5-minute checkpoint to log or update that interval:</p>';
+  h += '<div class="wave-box">';
+  SURF_STEPS.forEach(function(m) {
+    var rawU = pts[m] ? pts[m].urge : null;
+    var hasU = typeof rawU === 'number' && !isNaN(rawU);
+    var pct = hasU ? Math.max(10, rawU * 10) : 0;
+    h += '<div class="wave-col' + (step === m ? ' sel' : '') + '" data-act="sstep" data-v="' + m + '"><b>' + (hasU ? rawU + '/10' : '') + '</b><div class="wave-bar" style="height:' + (hasU ? pct + '%' : '4px') + ';' + (hasU ? '' : 'opacity:.2') + '"></div><span>' + m + 'm</span></div>';
+  });
+  h += '</div>';
+
+  // Checkpoint selector pills
+  h += '<div class="row" style="margin:10px 0">' + SURF_STEPS.map(function(m) {
+    var p = pts[m] || {};
+    var filled = typeof p.urge === 'number' && !isNaN(p.urge);
+    return '<button type="button" class="chip sm" data-act="sstep" data-v="' + m + '" aria-pressed="' + (step === m) + '">' + m + ' min' + (filled ? ' (' + p.urge + ')' : '') + '</button>';
+  }).join('') + '</div>';
+
+  // Active checkpoint inputs (unfilled until user chooses a rating)
+  h += '<h3>Logging checkpoint: ' + step + ' min</h3>';
+  h += '<div class="f"><div class="sl"><span>Urge at ' + step + ' min (0–10)</span><div><b data-out="surf.urge">' + (curHasUrge ? cur.urge : 'Not set') + '</b>' + (curHasUrge ? ' <button type="button" class="chip sm" style="min-height:28px;padding:3px 9px;margin-left:6px" data-act="surclear">Clear</button>' : '') + '</div></div>';
+  h += '<div class="row" style="gap:4px;margin:6px 0">';
+  for (var uVal = 0; uVal <= 10; uVal++) {
+    h += '<button type="button" class="chip sm" style="flex:1;min-width:34px;padding:6px 0;text-align:center" data-act="surge-num" data-v="' + uVal + '" aria-pressed="' + (curHasUrge && cur.urge === uVal) + '">' + uVal + '</button>';
+  }
+  h += '</div>';
+  h += '<input type="range" min="0" max="10" step="1" value="' + (curHasUrge ? cur.urge : 0) + '" data-b="surf.urge" aria-label="Urge at ' + step + ' min (0–10)"></div>';
+
+  h += '<div class="f"><span>What I notice in my body</span>' + chips(BODY_CHIPS, cur.body || '', 'sbody', true) + '<div style="margin-top:8px"><input type="text" data-b="surf.body" placeholder="e.g., Mouth watering, restlessness, tension..."></div></div>';
+  h += '<div class="f"><span>What I’m doing to ride it out</span>' + chips(RIDE_CHIPS, cur.act || '', 'sride', true) + '<div style="margin-top:8px"><input type="text" data-b="surf.act" placeholder="e.g., Sipping tea, breathing, walking..."></div></div>';
+
+  // Full 5-Interval Table (Uniform fixed layout & single-line time labels)
+  h += '<div><table class="tbl"><colgroup><col class="t-col"><col class="u-col"><col class="b-col"><col class="r-col"></colgroup><thead><tr><th class="t-col">Time</th><th class="u-col">Urge (0-10)</th><th class="b-col">What I notice in my body</th><th class="r-col">What I’m doing to ride it out</th></tr></thead><tbody>';
+  SURF_STEPS.forEach(function(m) {
+    var p = pts[m] || {};
+    var hasU = typeof p.urge === 'number' && !isNaN(p.urge);
+    h += '<tr style="cursor:pointer" data-act="sstep" data-v="' + m + '"><td class="t-col"><b>' + m + ' min</b></td><td class="u-col" data-urge-cell="' + m + '"><b>' + (hasU ? p.urge : '') + '</b></td><td class="b-col">' + esc(p.body || '') + '</td><td class="r-col">' + esc(p.act || '') + '</td></tr>';
+  });
+  h += '</tbody></table></div>';
+
+  h += fld('Reminder: Urges rise, peak, and fall. Record how long yours actually lasted (minutes)', 'surf.lasted', 0, 'Auto-filled when you stop the timer, or enter minutes...');
+  h += '<button type="button" class="btn" data-act="ssurf-save">Save completed urge surfing log</button>';
+  h += '<button type="button" class="btn alt" data-act="ssurf-reset">Reset surf log</button></div>';
+
+  if (D.surfs.length) {
+    h += '<div class="card"><h2>Saved urge surfing waves</h2>' + D.surfs.slice().reverse().slice(0, 8).map(function(r, i) {
+      var idx = D.surfs.length - 1 - i;
+      return '<div class="rec"><button type="button" class="x" data-act="ssurf-del" data-v="' + idx + '" aria-label="Delete wave">×</button><b>' + esc(r.d) + '</b> · Lasted: <b>' + esc(r.lasted || '—') + ' min</b><br><span class="mu">Wave (0m→20m): ' + esc(r.curve) + '</span></div>';
+    }).join('') + '</div>';
+  }
+  return h;
+}
+
+/* Part 4: My Replacement Plan */
+function vDesPlan() {
+  var opts = D.plan.opts || [];
+  var customOpts = D.plan.customOpts || [];
+  var h = '<h1>Part 4 · My Replacement Plan</h1>';
+  h += '<p class="mu">The habit is “meal ends, sweet begins.” Choose a new closing ritual to signal that lunch is finished.</p>';
+
+  h += '<div class="card"><h2>My if-then plan</h2>';
+  h += '<p>If I finish lunch and feel the urge for dessert, <b>then I will…</b></p>';
+  h += fld('Closing ritual action', 'dplan.ifthen', 2, '');
+  h += '</div>';
+
+  h += '<div class="card"><h2>Replacement options (circle two or three)</h2><p class="mu">Tap two or three options that work best for you (' + opts.length + ' selected):</p>';
+  h += '<div class="row">';
+  RITUAL_OPTS.forEach(function(c) {
+    var active = opts.indexOf(c[0]) > -1;
+    h += '<button type="button" class="chip" data-act="dopt" data-v="' + esc(c[0]) + '" aria-pressed="' + active + '">' + c[1] + '</button>';
+  });
+  customOpts.forEach(function(co, idx) {
+    var active = opts.indexOf(co) > -1;
+    h += '<div style="display:inline-flex;align-items:center;gap:2px;background:var(--soft);border-radius:999px;padding-right:4px">' +
+      '<button type="button" class="chip" data-act="dopt" data-v="' + esc(co) + '" aria-pressed="' + active + '">' + esc(co) + '</button>' +
+      '<button type="button" class="chip sm" style="min-height:30px;padding:2px 8px;background:transparent;color:var(--mu)" data-act="dopt-del" data-v="' + idx + '" aria-label="Remove ' + esc(co) + '">×</button>' +
+      '</div>';
+  });
+  h += '</div>';
+
+  h += '<div class="f" style="margin-top:14px"><span>Add custom replacement option</span>' +
+    '<div style="display:flex;gap:8px;align-items:center">' +
+    '<input type="text" id="custom-opt-in" data-b="fd.newOpt" placeholder="e.g., Eat a piece of fruit, Step outside..." style="flex:1">' +
+    '<button type="button" class="btn" style="width:auto;margin-top:0;padding:10px 16px;white-space:nowrap" data-act="dopt-add">+ Add</button>' +
+    '</div></div>';
+  h += '</div>';
+
+  h += '<div class="card"><h2>Making it easier</h2>';
+  h += fld('Desserts I will keep out of sight or out of the house', 'dplan.hide', 2, 'e.g., Keep sweets off the counter; store in opaque container or stop buying weekday sweets');
+  h += fld('What I will add to lunch to make it more filling (protein, fiber)', 'dplan.lunch', 2, 'e.g., Extra dal/paneer/chicken, salad greens, or a piece of fruit with lunch');
+  h += '</div>';
+  h += '<p class="mu">A self-help habit-change worksheet based on standard CBT methods. Not a substitute for care from a licensed therapist.</p>';
+  return h;
+}
+
+/* Part 5: Weekly Review */
+function vDesWeek() {
+  var ws = mon(new Date());
+  var skippedCnt = 0, ritualCnt = 0, urgeSum = 0, urgeN = 0;
+  for (var i = 0; i < 7; i++) {
+    var k = iso(addD(ws, i)), l = D.logs[k];
+    if (didSkipDes(k)) skippedCnt++;
+    if (didRitualDes(k)) ritualCnt++;
+    if (l && typeof l.urge === 'number') { urgeSum += l.urge; urgeN++; }
+  }
+  var avgUrge = urgeN ? (urgeSum / urgeN).toFixed(1) : '—';
+  var autoTrig = detectTopTriggerDes();
+
+  var h = '<h1>Part 5 · Weekly Review</h1><p class="mu">Review your progress at the end of each week.</p>';
+  h += '<div class="card"><div class="big">' + skippedCnt + ' / 7</div><p class="mu">days I skipped dessert this week</p>';
+  h += '<div class="bar"><i style="width:' + Math.min(100, (skippedCnt / 7) * 100) + '%"></i></div>';
+  h += '<div class="dots">';
+  for (var d = 0; d < 7; d++) {
+    var dk = iso(addD(ws, d));
+    h += '<div class="dot' + (didSkipDes(dk) ? ' on' : '') + (dk === td() ? ' now' : '') + '"><i></i>' + DN[d] + '</div>';
+  }
+  h += '</div>';
+  h += '<div class="stat-grid">' +
+    '<div class="stat-box"><b>' + skippedCnt + '/7</b><span>Skipped dessert</span></div>' +
+    '<div class="stat-box"><b>' + ritualCnt + '/7</b><span>Used ritual</span></div>' +
+    '<div class="stat-box"><b>' + avgUrge + '</b><span>Avg urge (0–10)</span></div>' +
+    '</div></div>';
+
+  h += '<div class="card"><h2>Weekly reflection</h2>';
+  if (autoTrig) h += '<p class="mu">Most logged trigger this week: <b>' + esc(autoTrig) + '</b></p>';
+  h += fld('Triggers that were hardest', 'dwk.hardTriggers', 2, 'e.g., Stressful meetings before lunch, seeing sweets in breakroom');
+  h += fld('Thoughts that I successfully challenged', 'dwk.challenged', 2, 'e.g., "I worked hard so I deserve sugar"');
+  h += fld('What helped most', 'dwk.helped', 2, 'e.g., Brushing teeth right after lunch and 20-min urge surfing');
+  h += fld('One thing to change next week', 'dwk.change', 2, 'e.g., Add more protein to lunch on Wednesdays');
+  h += fld('Progress reward (non-food)', 'dwk.reward', 1, 'e.g., New book, movie night, relaxing massage');
+  h += '</div>';
+
+  h += '<div class="note w"><b>When to seek extra support.</b> Talk to a psychologist or doctor if you notice intense guilt after eating, rigid food rules, bingeing, or significant distress around eating.</div>';
+  return h;
+}
+
+/* Part 6: Slip Recovery Plan + Monthly Calendar & Backup */
+function vDesCal() {
+  var n = new Date(), b = new Date(n.getFullYear(), n.getMonth() + CM, 1), y = b.getFullYear(), m = b.getMonth(), dim = new Date(y, m + 1, 0).getDate(), off = (b.getDay() + 6) % 7;
+  var c = { skipped_d: 0, ritual: 0, portion: 0, ate: 0 }, cells = '', i, d, k, st, cls;
+  for (i = 0; i < off; i++) cells += '<div></div>';
+  for (d = 1; d <= dim; d++) {
+    k = y + '-' + ('0' + (m + 1)).slice(-2) + '-' + ('0' + d).slice(-2);
+    st = (D.logs[k] || {}).st;
+    if (c[st] !== undefined) c[st]++;
+    cls = (st === 'skipped_d' || st === 'ritual') ? 'went' : (st === 'portion' ? 'short' : (st === 'ate' ? 'skipped' : ''));
+    cells += '<div class="cd ' + cls + (k === td() ? ' now' : '') + '">' + d + '</div>';
+  }
+  var totSuccess = c.skipped_d + c.ritual + c.portion;
+  var h = '<div class="card"><div class="cm"><button type="button" class="chip" data-act="cm" data-v="-1" aria-label="Previous month">‹</button><h2>' + b.toLocaleDateString('en-IN', { month: 'long', year: 'numeric' }) + '</h2><button type="button" class="chip" data-act="cm" data-v="1" aria-label="Next month"' + (CM >= 0 ? ' disabled style="opacity:.4"' : '') + '>›</button></div>';
+  h += '<p style="margin-top:12px"><span class="big">' + totSuccess + '</span> <span class="mu">day' + (totSuccess === 1 ? '' : 's') + ' on plan this month</span></p>';
+  h += '<p class="mu">Skipped ' + c.skipped_d + ' · Used ritual ' + c.ritual + ' · Planned portion ' + c.portion + ' · Ate dessert ' + c.ate + '</p>';
+  h += '<div class="cal">' + ['M', 'T', 'W', 'T', 'F', 'S', 'S'].map(function(x) { return '<div class="cw">' + x + '</div>'; }).join('') + cells + '</div>';
+  h += '<div class="lg"><span><i class="a"></i>Skipped / Ritual</span><span><i class="b"></i>Planned portion</span><span><i class="c"></i>Ate dessert</span></div></div>';
+  return h;
+}
+function vDesSlip() {
+  var h = '<h1>Part 6 · Slip Recovery & History</h1>';
+  h += '<div class="note"><b>A slip is information, not failure.</b> If you eat dessert, answer these four questions without guilt and return to the plan at your next meal.</div>';
+  h += '<div class="card"><h2>Slip recovery plan</h2>';
+  h += fld('1. What triggered it?', 'fd.sa', 2, 'e.g., Saw leftover cake in the kitchen when I was tired');
+  h += fld('2. What was I thinking just before?', 'fd.sb', 2, 'e.g., "Just one piece won’t hurt, I’ve been good all week"');
+  h += fld('3. What was I feeling (stress, boredom, tiredness)?', 'fd.sc', 2, 'e.g., Afternoon fatigue and stress from work');
+  h += fld('4. What will I do differently next time?', 'fd.sd', 2, 'e.g., Brew mint tea immediately after finishing my plate');
+  h += '<button type="button" class="btn" data-act="dssave">Save slip reflection & reset for next meal</button></div>';
+
+  if (D.slips.length) {
+    h += '<div class="card"><h2>Earlier slip reflections</h2>' + D.slips.slice().reverse().slice(0, 6).map(function(r, i) {
+      var idx = D.slips.length - 1 - i;
+      return '<div class="rec"><button type="button" class="x" data-act="dsdel" data-v="' + idx + '" aria-label="Delete slip">×</button><b>' + esc(r.d) + '</b> · Trigger: ' + esc(r.a) + '<br><span class="mu">Thought: “' + esc(r.b) + '” · Feeling: ' + esc(r.c) + '</span><br><b>Next time:</b> ' + esc(r.dd) + '</div>';
+    }).join('') + '</div>';
+  }
+
+  h += '<h2>Monthly Calendar & History</h2>' + vDesCal();
+  var ks = Object.keys(D.logs).sort().reverse(), L = { skipped_d: 'Skipped dessert', ritual: 'Used ritual', portion: 'Planned portion', ate: 'Ate dessert' };
+  h += '<div class="card"><h2>All logged lunches</h2>' + (ks.length ? ks.map(function(k) {
+    var l = D.logs[k], d = new Date(k + 'T12:00:00');
+    return '<div class="rec"><b>' + d.toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' }) + '</b> · ' + (L[l.st] || 'Logged') +
+      '<br><span class="mu">Hunger ' + (l.hunger ?? '—') + '/10 · Urge ' + (l.urge ?? '—') + '/10' + (l.trig ? ' · Trigger: ' + esc(l.trig) : '') + '</span>' +
+      (l.thought ? '<br>“' + esc(l.thought) + '”' : '') +
+      (l.what || l.mood ? '<br><span class="mu">' + esc(l.what || '') + (l.mood ? ' · Mood: ' + esc(l.mood) : '') + '</span>' : '') + '</div>';
+  }).join('') : '<p class="mu">No days logged yet. Use Part 1 (Log) to add your first entry.</p>') + '</div>';
+
+  h += backupCardHTML();
+  return h;
+}
+
+/* ==========================================================================
+   BINDING & RENDER ENGINE
+   ========================================================================== */
+var V_GYM = { today: vGymToday, plan: vGymPlan, thoughts: vGymThoughts, week: vGymWeek, slip: vGymSlip, history: vGymHistory };
+var V_DES = { today: vDesToday, thoughts: vDesThoughts, surf: vDesSurf, plan: vDesPlan, week: vDesWeek, slip: vDesSlip };
+
+function val(r, k) {
+  if (r === 'plan') return S.plan[k];
+  if (r === 'f') return F[k];
+  if (r === 'log') return (S.logs[td()] || {})[k];
+  if (r === 'ghist' && k === 'date') return selGymHistDate;
+  if (r === 'ghlog') return (S.logs[selGymHistDate] || {})[k];
+  if (r === 'wk') return (S.weeks[WK()] || {})[k];
+  if (r === 'dplan') return D.plan[k];
+  if (r === 'fd') return FD[k];
+  if (r === 'dlog') return (D.logs[selDesDate] || {})[k];
+  if (r === 'dwk') return (D.weeks[WK()] || {})[k];
+  if (r === 'surf') {
+    if (k === 'lasted') return D.surfDraft.lasted;
+    var step = D.surfDraft.step || 0;
+    return (D.surfDraft.pts[step] || {})[k];
+  }
+  return '';
+}
+
+function put(r, k, v) {
+  if (r === 'plan') S.plan[k] = v;
+  else if (r === 'f') F[k] = v;
+  else if (r === 'log') { S.logs[td()] = S.logs[td()] || {}; S.logs[td()][k] = v; }
+  else if (r === 'ghist' && k === 'date') { if (v) { selGymHistDate = v; gymHistSavedMsg = ''; } }
+  else if (r === 'ghlog') { S.logs[selGymHistDate] = S.logs[selGymHistDate] || {}; S.logs[selGymHistDate][k] = v; gymHistSavedMsg = ''; }
+  else if (r === 'wk') { S.weeks[WK()] = S.weeks[WK()] || {}; S.weeks[WK()][k] = v; }
+  else if (r === 'dplan') D.plan[k] = v;
+  else if (r === 'fd') FD[k] = v;
+  else if (r === 'dlog') { D.logs[selDesDate] = D.logs[selDesDate] || {}; D.logs[selDesDate][k] = v; }
+  else if (r === 'dwk') { D.weeks[WK()] = D.weeks[WK()] || {}; D.weeks[WK()][k] = v; }
+  else if (r === 'surf') {
+    if (k === 'lasted') D.surfDraft.lasted = v;
+    else {
+      var step = D.surfDraft.step || 0;
+      D.surfDraft.pts[step] = D.surfDraft.pts[step] || { urge: null, body: '', act: '' };
+      D.surfDraft.pts[step][k] = v;
+    }
+  }
+}
+
+function updateModeChrome() {
+  document.documentElement.setAttribute('data-mode', MODE);
+  $('#m-gym').setAttribute('aria-selected', MODE === 'gym');
+  $('#m-dessert').setAttribute('aria-selected', MODE === 'dessert');
+  var rb = $('#ritual-banner');
+  if (MODE === 'dessert') {
+    rb.style.display = 'block';
+    var rt = (D.plan.ifthen || '').trim();
+    $('#ritual-txt').textContent = rt ? ('If urge hits → ' + rt) : 'Not set yet — tap 4. Ritual to set yours';
+  } else {
+    rb.style.display = 'none';
+  }
+}
+
+function render() {
+  updateModeChrome();
+  var activeTab = MODE === 'gym' ? tabGym : tabDes;
+  var views = MODE === 'gym' ? V_GYM : V_DES;
+  var tabs = MODE === 'gym' ? TABS_GYM : TABS_DES;
+
+  $('#m').innerHTML = views[activeTab]();
+  $('#nv').innerHTML = tabs.map(function(t) {
+    return '<button type="button" data-tab="' + t[0] + '"' + (t[0] === activeTab ? ' aria-current="true"' : '') + '>' + t[1] + '</button>';
+  }).join('');
+
+  document.querySelectorAll('[data-b]').forEach(function(el) {
+    var p = el.dataset.b.split('.'), v = val(p[0], p[1]);
+    if (el.type === 'checkbox') el.checked = !!v;
+    else if (el.type === 'range') {
+      if (typeof v === 'number' && !isNaN(v)) el.value = v;
+      else if (el.dataset.b === 'surf.urge') el.value = 0;
+    }
+    else el.value = v != null ? v : '';
+    var o = $('[data-out="' + el.dataset.b + '"]');
+    if (o) o.textContent = (typeof v === 'number' && !isNaN(v)) ? v : (el.dataset.b === 'surf.urge' ? 'Not set' : '—');
+  });
+
+  if ($('#tmc')) $('#tmc').innerHTML = tmHTMLGym();
+  if ($('#stmc')) $('#stmc').innerHTML = tmHTMLDes();
+  if ($('#bk')) $('#bk').value = JSON.stringify({ version: 'unified-v1', gym: S, dessert: D });
+  paintFaces();
+}
+
+/* Timers Tick (10-min Gym Timer & 20-min Dessert Urge Surf Timer) */
+function tickGym() {
+  var c = $('#tmc');
+  if (Date.now() >= T.end) {
+    clearInterval(T.iv); T.iv = null; T.end = 0; T.done = true;
+    try { navigator.vibrate && navigator.vibrate(300); } catch(e) {}
+  }
+  if (c) c.innerHTML = tmHTMLGym();
+}
+function tickDes() {
+  var c = $('#stmc');
+  if (Date.now() >= TS.end) {
+    clearInterval(TS.iv); TS.iv = null; TS.end = 0; TS.startAt = 0; TS.done = true;
+    D.surfDraft.step = 20;
+    D.surfDraft.lasted = '20';
+    TS.stoppedNote = '20 minutes complete — automatically recorded 20 min below.';
+    saveDes();
+    try { navigator.vibrate && navigator.vibrate([250, 100, 250]); } catch(e) {}
+    if (MODE === 'dessert' && tabDes === 'surf') render();
+    return;
+  }
+  if (c) c.innerHTML = tmHTMLDes();
+}
+
+/* Input & Interaction Listeners */
+document.addEventListener('input', hnd);
+document.addEventListener('change', hnd);
+
+function hnd(e) {
+  var p = e.target.dataset && e.target.dataset.b;
+  if (!p) return;
+  var q = p.split('.'), t = e.target;
+  var v = t.type === 'checkbox' ? t.checked : t.type === 'range' ? +t.value : t.value;
+  put(q[0], q[1], v);
+  if (q[0] === 'ghist' && q[1] === 'date') { render(); return; }
+  if (q[0] !== 'f' && q[0] !== 'fd' && q[0] !== 'ghist') save();
+  var o = $('[data-out="' + p + '"]');
+  if (o && typeof v === 'number') o.textContent = v;
+
+  // Live update urge delta in Dessert Part 2
+  if (p === 'fd.before' || p === 'fd.after') {
+    var b = typeof FD.before === 'number' ? FD.before : 70;
+    var a = typeof FD.after === 'number' ? FD.after : 25;
+    var d = b - a;
+    var delEl = $('#d-urge-delta');
+    if (delEl) delEl.innerHTML = '<b>Urge change:</b> ' + (d > 0 ? '↓ ' + d + ' points drop (from ' + b + ' to ' + a + ')' : (d < 0 ? '↑ ' + Math.abs(d) + ' points' : 'No change (' + b + ')'));
+  }
+  if (p === 'dplan.ifthen') updateModeChrome();
+  if (p === 'surf.urge' && MODE === 'dessert' && tabDes === 'surf') {
+    // Update wave bar height, number chips, and table cell live without losing slider focus
+    var curStep = D.surfDraft.step || 0;
+    var cols = document.querySelectorAll('.wave-col');
+    var idx = SURF_STEPS.indexOf(curStep);
+    if (cols[idx]) {
+      cols[idx].querySelector('b').textContent = v + '/10';
+      var bar = cols[idx].querySelector('.wave-bar');
+      bar.style.height = Math.max(10, v * 10) + '%';
+      bar.style.opacity = '1';
+    }
+    var cell = $('[data-urge-cell="' + curStep + '"]');
+    if (cell) cell.innerHTML = '<b>' + v + '</b>';
+    document.querySelectorAll('[data-act="surge-num"]').forEach(function(btn) {
+      btn.setAttribute('aria-pressed', +btn.dataset.v === v);
+    });
+  }
+  paintFaces();
+}
+
+/* Long-press handler for trap meanings */
+document.addEventListener('pointerdown', function(e) {
+  var b = e.target.closest('[data-act="trap"],[data-act="dtrap"]');
+  if (!b) return;
+  LP = false; clearTimeout(LT);
+  LT = setTimeout(function() { LP = true; TM = b.dataset.v; render(); }, 500);
+});
+['pointerup', 'pointercancel', 'pointerleave'].forEach(function(n) {
+  document.addEventListener(n, function() { clearTimeout(LT); }, true);
+});
+document.addEventListener('contextmenu', function(e) {
+  if (e.target.closest('[data-act="trap"],[data-act="dtrap"]')) e.preventDefault();
+});
+
+/* Click Actions */
+document.addEventListener('click', function(e) {
+  var b = e.target.closest('[data-tab],[data-act]');
+  if (!b) return;
+
+  if (b.dataset.tab) {
+    if (MODE === 'gym') tabGym = b.dataset.tab;
+    else tabDes = b.dataset.tab;
+    DA = false; TM = '';
+    render();
+    window.scrollTo(0, 0);
+    return;
+  }
+
+  var a = b.dataset.act, v = b.dataset.v;
+
+  // Mode Switcher
+  if (a === 'mode') {
+    MODE = v;
+    try { localStorage.setItem(KEY_MODE, MODE); } catch(x) {}
+    DA = false; TM = '';
+    render();
+    window.scrollTo(0, 0);
+    return;
+  }
+  if (a === 'go-surf') {
+    MODE = 'dessert'; tabDes = 'surf';
+    render();
+    window.scrollTo(0, 0);
+    return;
+  }
+
+  // Gym Habit Actions
+  if (a === 'st') { var l = S.logs[td()] = S.logs[td()] || {}; l.st = l.st === v ? '' : v; saveGym(); render(); }
+  else if (a === 'ghday') { selGymHistDate = v; gymHistSavedMsg = ''; render(); }
+  else if (a === 'ghst') {
+    var ghl = S.logs[selGymHistDate] = S.logs[selGymHistDate] || {};
+    ghl.st = ghl.st === v ? '' : v;
+    gymHistSavedMsg = '';
+    saveGym(); render();
+  }
+  else if (a === 'ghsave') {
+    S.logs[selGymHistDate] = S.logs[selGymHistDate] || {};
+    gymHistSavedMsg = 'Saved historical entry for ' + new Date(selGymHistDate + 'T12:00:00').toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' }) + '.';
+    saveGym(); render();
+  }
+  else if (a === 'ghdel') {
+    delete S.logs[selGymHistDate];
+    gymHistSavedMsg = 'Deleted entry for ' + new Date(selGymHistDate + 'T12:00:00').toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) + '.';
+    saveGym(); render();
+  }
+  else if (a === 'tstart') { T.done = false; T.end = Date.now() + 6e5; clearInterval(T.iv); T.iv = setInterval(tickGym, 500); tickGym(); }
+  else if (a === 'tstop') { clearInterval(T.iv); T.iv = null; T.end = 0; T.done = false; tickGym(); }
+  else if (a === 'trap') { if (LP) { LP = false; return; } F.trap = F.trap === v ? '' : v; TM = ''; render(); }
+  else if (a === 'alt') { F.alt = altListGym()[+v]; render(); }
+  else if (a === 'pe') { EP = true; render(); }
+  else if (a === 'pdone') { var w2 = S.weeks[WK()] = S.weeks[WK()] || {}; w2.set = true; EP = false; saveGym(); render(); }
+  else if (a === 'pd') { var w = S.weeks[WK()] = S.weeks[WK()] || {}, p = w.days = w.days || [], ix = p.indexOf(+v); if (ix > -1) p.splice(ix, 1); else p.push(+v); saveGym(); render(); }
+  else if (a === 'fill') { F.thought = COMMON_GYM[+v][0]; F.ci = +v; F.alt = ''; render(); }
+  else if (a === 'tsave') {
+    if (!(F.thought || '').trim()) return;
+    S.thoughts.push({ d: new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'short' }), sit: F.sit || '', thought: F.thought, trap: F.trap, alt: F.alt || '', after: F.after });
+    F = { trap: '', after: 5 }; saveGym(); render();
+  }
+  else if (a === 'tdel') { S.thoughts.splice(+v, 1); saveGym(); render(); }
+  else if (a === 'cm') { CM = Math.min(0, CM + (+v)); render(); }
+  else if (a === 'arm') { DA = !DA; render(); }
+  else if (a === 'del') { delete S.logs[td()]; DA = false; saveGym(); render(); }
+  else if (a === 'ssave') {
+    if (!(F.a || '').trim() && !(F.d || '').trim()) return;
+    S.slips.push({ d: new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'short' }), a: F.a || '', b: F.b || '', c: F.c || '', dd: F.d || '', day: F.day || '', time: F.time || '' });
+    F = { trap: '', after: 5 }; saveGym(); render();
+  }
+
+  // Skip Dessert Actions
+  else if (a === 'dday') { selDesDate = v; DA = false; render(); }
+  else if (a === 'dst') {
+    var dl = D.logs[selDesDate] = D.logs[selDesDate] || {};
+    dl.st = dl.st === v ? '' : v;
+    if (dl.st === 'ritual' && !dl.what) dl.what = D.plan.ifthen || 'Used replacement ritual';
+    saveDes(); render();
+  }
+  else if (a === 'dtrig') {
+    var dl2 = D.logs[selDesDate] = D.logs[selDesDate] || {};
+    dl2.trig = dl2.trig === v ? '' : v;
+    saveDes(); render();
+  }
+  else if (a === 'dmood') {
+    var dl3 = D.logs[selDesDate] = D.logs[selDesDate] || {};
+    dl3.mood = dl3.mood === v ? '' : v;
+    saveDes(); render();
+  }
+  else if (a === 'ddel') { delete D.logs[selDesDate]; DA = false; saveDes(); render(); }
+  else if (a === 'dfill') {
+    var c = COMMON_DES[+v];
+    FD.thought = c[0]; FD.trap = c[1]; FD.alt = c[2];
+    render();
+  }
+  else if (a === 'dtrap') { if (LP) { LP = false; return; } FD.trap = FD.trap === v ? '' : v; TM = ''; render(); }
+  else if (a === 'dtoggletraps') { showAllTrapsDes = !showAllTrapsDes; render(); }
+  else if (a === 'dalt') { FD.alt = altListDes()[+v]; render(); }
+  else if (a === 'dtsave') {
+    if (!(FD.thought || '').trim() && !(FD.alt || '').trim()) return;
+    D.thoughts.push({
+      d: new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'short' }),
+      sit: FD.sit || '', thought: FD.thought || '', emo: FD.emo || '',
+      before: typeof FD.before === 'number' ? FD.before : 70,
+      trap: FD.trap || '', evFor: FD.evFor || '', evAgainst: FD.evAgainst || '',
+      alt: FD.alt || '', after: typeof FD.after === 'number' ? FD.after : 25,
+      act: FD.act || ''
+    });
+    FD = { sit: '', thought: '', emo: '', before: 70, trap: '', evFor: '', evAgainst: '', alt: '', after: 25, act: '' };
+    saveDes(); render();
+  }
+  else if (a === 'dtdel') { D.thoughts.splice(+v, 1); saveDes(); render(); }
+
+  // Part 3 Urge Surfing Actions
+  else if (a === 'sstart') {
+    TS.done = false;
+    TS.stoppedNote = '';
+    TS.startAt = Date.now();
+    TS.end = TS.startAt + 1200000;
+    clearInterval(TS.iv);
+    TS.iv = setInterval(tickDes, 500);
+    tickDes();
+  }
+  else if (a === 'sstop') {
+    var elapsedMs = TS.startAt ? (Date.now() - TS.startAt) : (TS.end ? (1200000 - Math.max(0, TS.end - Date.now())) : 0);
+    var elapsedSec = Math.max(1, elapsedMs / 1000);
+    var mins = elapsedSec >= 60 ? String(Math.round(elapsedSec / 60)) : String(Math.max(0.1, +(elapsedSec / 60).toFixed(1)));
+    clearInterval(TS.iv); TS.iv = null; TS.end = 0; TS.startAt = 0; TS.done = false;
+    D.surfDraft.lasted = mins;
+    TS.stoppedNote = 'Timer stopped — automatically recorded ' + mins + ' min in the duration box below.';
+    saveDes();
+    render();
+  }
+  else if (a === 'sstep') { D.surfDraft.step = +v; saveDes(); render(); }
+  else if (a === 'surge-num') {
+    var stpU = D.surfDraft.step || 0;
+    D.surfDraft.pts[stpU] = D.surfDraft.pts[stpU] || { urge: null, body: '', act: '' };
+    D.surfDraft.pts[stpU].urge = +v;
+    saveDes(); render();
+  }
+  else if (a === 'surclear') {
+    var stpC = D.surfDraft.step || 0;
+    D.surfDraft.pts[stpC] = D.surfDraft.pts[stpC] || { urge: null, body: '', act: '' };
+    D.surfDraft.pts[stpC].urge = null;
+    saveDes(); render();
+  }
+  else if (a === 'sbody') {
+    var stp = D.surfDraft.step || 0;
+    D.surfDraft.pts[stp] = D.surfDraft.pts[stp] || { urge: null, body: '', act: '' };
+    D.surfDraft.pts[stp].body = D.surfDraft.pts[stp].body === v ? '' : v;
+    saveDes(); render();
+  }
+  else if (a === 'sride') {
+    var stp2 = D.surfDraft.step || 0;
+    D.surfDraft.pts[stp2] = D.surfDraft.pts[stp2] || { urge: null, body: '', act: '' };
+    D.surfDraft.pts[stp2].act = D.surfDraft.pts[stp2].act === v ? '' : v;
+    saveDes(); render();
+  }
+  else if (a === 'ssurf-save') {
+    if (TS.end > Date.now() && TS.startAt) {
+      var elSec = Math.max(1, (Date.now() - TS.startAt) / 1000);
+      D.surfDraft.lasted = elSec >= 60 ? String(Math.round(elSec / 60)) : String(Math.max(0.1, +(elSec / 60).toFixed(1)));
+      clearInterval(TS.iv); TS.iv = null; TS.end = 0; TS.startAt = 0;
+    }
+    var pts = D.surfDraft.pts || defaultSurfIntervals();
+    var curve = SURF_STEPS.map(function(m) {
+      return (pts[m] && typeof pts[m].urge === 'number' && !isNaN(pts[m].urge)) ? pts[m].urge : '—';
+    }).join(' → ');
+    D.surfs.push({
+      d: new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'short' }),
+      lasted: D.surfDraft.lasted || '—',
+      curve: curve,
+      pts: JSON.parse(JSON.stringify(pts))
+    });
+    saveDes(); render();
+  }
+  else if (a === 'ssurf-reset') {
+    clearInterval(TS.iv); TS.iv = null; TS.end = 0; TS.startAt = 0; TS.done = false; TS.stoppedNote = '';
+    D.surfDraft = { step: 0, lasted: '', pts: defaultSurfIntervals() };
+    D.surf = D.surfDraft;
+    saveDes(); render();
+  }
+  else if (a === 'ssurf-del') { D.surfs.splice(+v, 1); saveDes(); render(); }
+
+  // Part 4 Replacement Plan Options
+  else if (a === 'dopt') {
+    var arr = D.plan.opts = D.plan.opts || [];
+    var idx = arr.indexOf(v);
+    if (idx > -1) arr.splice(idx, 1); else arr.push(v);
+    saveDes(); render();
+  }
+  else if (a === 'dopt-add') {
+    var inp = $('#custom-opt-in');
+    var raw = ((inp ? inp.value : FD.newOpt) || '').trim();
+    if (!raw) return;
+    D.plan.customOpts = D.plan.customOpts || [];
+    D.plan.opts = D.plan.opts || [];
+    var exists = D.plan.customOpts.some(function(x) { return x.toLowerCase() === raw.toLowerCase(); }) ||
+                 RITUAL_OPTS.some(function(r) { return r[0].toLowerCase() === raw.toLowerCase(); });
+    if (!exists) D.plan.customOpts.push(raw);
+    if (D.plan.opts.indexOf(raw) === -1) D.plan.opts.push(raw);
+    FD.newOpt = '';
+    saveDes(); render();
+  }
+  else if (a === 'dopt-del') {
+    var cIdx = +v;
+    D.plan.customOpts = D.plan.customOpts || [];
+    var removed = D.plan.customOpts.splice(cIdx, 1)[0];
+    if (removed && D.plan.opts) {
+      var oIdx = D.plan.opts.indexOf(removed);
+      if (oIdx > -1) D.plan.opts.splice(oIdx, 1);
+    }
+    saveDes(); render();
+  }
+
+  // Part 6 Slip Save / Delete
+  else if (a === 'dssave') {
+    if (!(FD.sa || '').trim() && !(FD.sd || '').trim()) return;
+    D.slips.push({
+      d: new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'short' }),
+      a: FD.sa || '', b: FD.sb || '', c: FD.sc || '', dd: FD.sd || ''
+    });
+    FD.sa = ''; FD.sb = ''; FD.sc = ''; FD.sd = '';
+    saveDes(); render();
+  }
+  else if (a === 'dsdel') { D.slips.splice(+v, 1); saveDes(); render(); }
+
+  // Unified Backup & Restore
+  else if (a === 'copy') {
+    var t = $('#bk'), ok = false;
+    t.select();
+    try { ok = document.execCommand('copy'); } catch(x) {}
+    try { if (navigator.clipboard) { navigator.clipboard.writeText(t.value); ok = true; } } catch(x) {}
+    $('#bkm').textContent = ok ? 'Copied unified backup.' : 'Select the text above and copy it manually.';
+  }
+  else if (a === 'restore') {
+    try {
+      var o = JSON.parse($('#bk').value);
+      if (!o || typeof o !== 'object') throw 0;
+      if (o.version === 'unified-v1' || (o.gym && o.dessert)) {
+        if (o.gym) {
+          S = o.gym;
+          S.plan = S.plan || {}; S.logs = S.logs || {}; S.thoughts = S.thoughts || []; S.weeks = S.weeks || {}; S.slips = S.slips || [];
+          saveGym();
+        }
+        if (o.dessert) {
+          D = o.dessert;
+          D.plan = D.plan || { ifthen: '', opts: [], customOpts: [] };
+          D.plan.opts = D.plan.opts || [];
+          D.plan.customOpts = D.plan.customOpts || [];
+          D.logs = D.logs || {}; D.thoughts = D.thoughts || []; D.surfs = D.surfs || [];
+          D.surfDraft = D.surfDraft || { step: 0, lasted: '', pts: defaultSurfIntervals() };
+          D.surf = D.surfDraft;
+          D.weeks = D.weeks || {}; D.slips = D.slips || [];
+          saveDes();
+        }
+      } else if (o.logs) {
+        S = o;
+        S.plan = S.plan || {}; S.logs = S.logs || {}; S.thoughts = S.thoughts || []; S.weeks = S.weeks || {}; S.slips = S.slips || [];
+        saveGym();
+      } else {
+        throw 0;
+      }
+      render();
+      $('#bkm').textContent = 'Restored successfully.';
+    } catch(x) {
+      $('#bkm').textContent = 'That text is not a valid backup.';
+    }
+  }
+});
+
+/* Theme Switcher (Light / Dark) */
+var TH = '', mq = window.matchMedia ? matchMedia('(prefers-color-scheme: dark)') : null;
+try { TH = localStorage.getItem('cbt-gym-theme') || ''; } catch(e) {}
+function isDark() {
+  var a = document.documentElement.getAttribute('data-theme');
+  return a === 'dark' || (a !== 'light' && !!mq && mq.matches);
+}
+function applyTheme() {
+  var r = document.documentElement;
+  if (TH === 'light' || TH === 'dark') r.setAttribute('data-theme', TH);
+  else r.removeAttribute('data-theme');
+  var b = $('#tg'), d = isDark();
+  b.textContent = d ? '☀ Light' : '☾ Dark';
+  b.setAttribute('aria-label', d ? 'Switch to light mode' : 'Switch to dark mode');
+}
+$('#tg').addEventListener('click', function() {
+  TH = isDark() ? 'light' : 'dark';
+  try { localStorage.setItem('cbt-gym-theme', TH); } catch(e) {}
+  applyTheme();
+});
+if (mq && mq.addEventListener) mq.addEventListener('change', applyTheme);
+
+applyTheme();
+render();
+</script>
+</body>
+</html>
